@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gedragsbeoordeling</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gedragsbeoordeling</h1>
+            <button onclick="showAddClassForm()" class="btn-primary">Nieuwe Klas</button>
+        </header>
+
+        <div id="addClassForm" class="form-container" style="display: none;">
+            <h3>Nieuwe Klas Toevoegen</h3>
+            <input type="text" id="className" placeholder="Klasnaam (bijv. Groep 8A)" required>
+            <div class="form-buttons">
+                <button onclick="addClass()" class="btn-primary">Opslaan</button>
+                <button onclick="hideAddClassForm()" class="btn-secondary">Annuleren</button>
+            </div>
+        </div>
+
+        <div id="addStudentForm" class="form-container" style="display: none;">
+            <h3>Nieuwe Leerling Toevoegen</h3>
+            <input type="text" id="studentFirstName" placeholder="Voornaam" required>
+            <input type="text" id="studentLastName" placeholder="Achternaam" required>
+            <input type="hidden" id="currentClassId">
+            <div class="form-buttons">
+                <button onclick="addStudent()" class="btn-primary">Opslaan</button>
+                <button onclick="hideAddStudentForm()" class="btn-secondary">Annuleren</button>
+            </div>
+        </div>
+
+        <main>
+            <div id="classesList" class="cards-container">
+                <!-- Klassen worden hier geladen -->
+            </div>
+
+            <div id="studentsList" class="students-container" style="display: none;">
+                <button onclick="backToClasses()" class="btn-secondary">← Terug naar klassen</button>
+                <h2 id="classNameTitle"></h2>
+                <button onclick="showAddStudentForm()" class="btn-primary">Nieuwe Leerling</button>
+                <div class="students-grid" id="studentsGrid">
+                    <!-- Leerlingen worden hier geladen -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
