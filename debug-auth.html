@@ -41,10 +41,6 @@
 
     // 🔥 Vervang dit door jouw eigen Firebase configuratie!
 
-    // Initialiseer Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-      
 const firebaseConfig = {
   apiKey: "AIzaSyCO2ndD-lTBZpRrs-ZxIsBTVjPVza2sFXU",
   authDomain: "schoolquizapp-28abf.firebaseapp.com",
@@ -53,6 +49,11 @@ const firebaseConfig = {
   messagingSenderId: "921022621334",
   appId: "1:921022621334:web:ef582f1e067a77a41284b7"
 };
+
+    // Initialiseer Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+      
       const provider = new GoogleAuthProvider();
 
     // Elementen
