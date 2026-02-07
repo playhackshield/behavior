@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase Login Test</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        button { padding: 10px; margin: 5px; }
+        .info { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Firebase Login Test</h1>
+    
+    <button onclick="loginWithGoogle()">Login met Google</button>
+    <button onclick="logout()">Logout</button>
+    
+    <div id="userInfo" class="info">
+        <h3>Niet ingelogd</h3>
+    </div>
+    
+    <div id="testResult" class="info">
+        <h3>Test Resultaat</h3>
+        <div id="testOutput"></div>
+    </div>
+    
+    <script>
+        // VUL HIER JE EIGEN CONFIG IN!
+        const firebaseConfig = {
+            apiKey: "AIzaSyABC123...",  // ← Je eigen API key
+            authDomain: "jouw-project.firebaseapp.com",
+            projectId: "jouw-project-id",  // ← BELANGRIJK!
+            storageBucket: "jouw-project.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abc123def456"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        console.log("Firebase geïnitialiseerd met project:", firebaseConfig.projectId);
+        
+        // 1. Google Login
+        function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    console.log("Login succesvol:", result.user);
+                    updateUserInfo(result.user);
+                    testDatabaseAccess();
+                })
+                .catch((error) => {
+                    console.error("Login fout:", error);
+                    document.getElementById('testOutput').innerHTML = 
+                        `<p class="error">Login mislukt: ${error.message}</p>`;
+                });
+        }
+        
+        // 2. Logout
+        function logout() {
+            auth.signOut();
+            document.getElementById('userInfo').innerHTML = "<h3>Niet ingelogd</h3>";
+            document.getElementById('testOutput').innerHTML = "";
+        }
+        
+        // 3. Toon gebruiker info
+        function updateUserInfo(user) {
+            const userInfo = `
+                <h3 class="success">✓ Ingelogd als:</h3>
+                <p><strong>Email:</strong> ${user.email}</p>
+                <p><strong>User ID:</strong> ${user.uid}</p>
+                <p><strong>Naam:</strong> ${user.displayName || 'Onbekend'}</p>
+                <p><strong>Email geverifieerd:</strong> ${user.emailVerified ? 'Ja' : 'Nee'}</p>
+                <p><small>Kopieer deze email voor je Firebase Rules</small></p>
+            `;
+            document.getElementById('userInfo').innerHTML = userInfo;
+        }
+        
+        // 4. Test database toegang
+        function testDatabaseAccess() {
+            const testOutput = document.getElementById('testOutput');
+            testOutput.innerHTML = "<p>Testen database toegang...</p>";
+            
+            // Test 1: Probeer klas toe te voegen
+            db.collection("testConnection").add({
+                timestamp: new Date().toISOString(),
+                userEmail: auth.currentUser?.email,
+                message: "Test van gebruiker"
+            })
+            .then((docRef) => {
+                testOutput.innerHTML += `<p class="success">✓ Database schrijven gelukt!</p>`;
+                testOutput.innerHTML += `<p>Document ID: ${docRef.id}</p>`;
+                
+                // Test 2: Probeer te lezen
+                return db.collection("testConnection").doc(docRef.id).get();
+            })
+            .then((doc) => {
+                if (doc.exists) {
+                    testOutput.innerHTML += `<p class="success">✓ Database lezen gelukt!</p>`;
+                }
+                
+                // Test 3: Probeer klassen te lezen (je echte collectie)
+                return db.collection("classes").limit(1).get();
+            })
+            .then((querySnapshot) => {
+                testOutput.innerHTML += `<p class="success">✓ Klassen lezen gelukt!</p>`;
+                testOutput.innerHTML += `<p>Aantal klassen: ${querySnapshot.size}</p>`;
+            })
+            .catch((error) => {
+                testOutput.innerHTML += `<p class="error">✗ Database fout: ${error.code}</p>`;
+                testOutput.innerHTML += `<p class="error">Bericht: ${error.message}</p>`;
+                testOutput.innerHTML += `<p><strong>Dit betekent:</strong></p>`;
+                
+                if (error.code === 'permission-denied') {
+                    testOutput.innerHTML += `
+                        <p>1. Je Firebase Rules staan te restrictief</p>
+                        <p>2. Je email (${auth.currentUser?.email}) heeft geen schrijfrechten</p>
+                        <p>3. Controleer je Rules in Firebase Console</p>
+                    `;
+                }
+                console.error("Database test fout:", error);
+            });
+        }
+        
+        // 5. Auto login bij refresh
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log("Auto-login:", user.email);
+                updateUserInfo(user);
+                testDatabaseAccess();
+            }
+        });
+        
+        // 6. Toon huidige Firebase Rules knop
+        function showCurrentRules() {
+            alert("Ga naar: Firebase Console → Firestore Database → Rules tab");
+        }
+    </script>
+    
+    <div style="margin-top: 30px; padding: 15px; background: #e8f4fd; border-radius: 5px;">
+        <h4>Controleer je Firebase Rules:</h4>
+        <button onclick="showCurrentRules()">Toon Rules in Console</button>
+        <p><small>Email die je moet whitelisten: <span id="currentEmail"></span></small></p>
+    </div>
+    
+    <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 5px;">
+        <h4>Voorbeeld Rules (kopieer dit):</h4>
+        <pre style="background: white; padding: 10px; border-radius: 3px; font-size: 12px;">
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /testConnection/{doc} {
+      allow read, write: if true;  // Iedereen mag testen
+    }
+    
+    match /classes/{classId} {
+      // VERVANG DIT MET JE EIGEN EMAIL:
+      allow write: if request.auth != null && 
+        request.auth.token.email == "JOUW.EMAIL@GMAIL.COM";
+      allow read: if request.auth != null;
+    }
+    
+    match /students/{studentId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}</pre>
+    </div>
+</body>
+</html>
