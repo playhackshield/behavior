@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Debug Auth</title>
+    <title>Debug Auth 2</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <style>
@@ -43,14 +43,14 @@
         document.getElementById('domain').textContent = domain;
         
         // Jouw Firebase config - VERVANG DIT!
-        const firebaseConfig = {
-            apiKey: "AIzaSyABC123...", // ← VERVANG
-            authDomain: "quiz-app-12345.firebaseapp.com", // ← VERVANG met jouw project
-            projectId: "quiz-app-12345", // ← VERVANG
-            storageBucket: "quiz-app-12345.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abc123def456"
-        };
+const firebaseConfig = {
+  apiKey: "AIzaSyCO2ndD-lTBZpRrs-ZxIsBTVjPVza2sFXU",
+  authDomain: "schoolquizapp-28abf.firebaseapp.com",
+  projectId: "schoolquizapp-28abf",
+  storageBucket: "schoolquizapp-28abf.firebasestorage.app",
+  messagingSenderId: "921022621334",
+  appId: "1:921022621334:web:ef582f1e067a77a41284b7"
+};
         
         // Toon config
         document.getElementById('config').textContent = JSON.stringify(firebaseConfig, null, 2);
