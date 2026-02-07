@@ -1,107 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Debug OAuth Error</title>
+    <title>Test Redirect URI</title>
     <style>
-        body { font-family: Arial; padding: 20px; max-width: 800px; margin: 0 auto; }
-        .step { background: #e3f2fd; padding: 15px; margin: 10px 0; border-radius: 5px; }
-        .error { background: #ffebee; color: #c62828; padding: 15px; }
-        code { background: #f5f5f5; padding: 2px 4px; border-radius: 3px; }
+        body { font-family: Arial; padding: 20px; }
+        .test { background: #e3f2fd; padding: 15px; margin: 10px; border-radius: 5px; }
+        button { background: #4285f4; color: white; border: none; padding: 10px; margin: 5px; border-radius: 4px; }
     </style>
 </head>
 <body>
-    <h1>OAuth "Invalid Action" Debug</h1>
+    <h1>Test Redirect URIs</h1>
     
-    <div class="step">
-        <h2>Directe oplossingen:</h2>
-        <ol>
-            <li><strong><a href="https://console.cloud.google.com/apis/credentials?project=schoolquizapp-28abf" target="_blank">
-                Open Google Cloud Console Credentials
-            </a></strong></li>
-            <li>Klik op je <strong>Web client</strong></li>
-            <li>Voeg toe bij <strong>Authorized JavaScript origins</strong>:
-                <ul>
-                    <li><code>https://playhackshield.github.io</code></li>
-                    <li><code>https://schoolquizapp-28abf.firebaseapp.com</code></li>
-                </ul>
-            </li>
-            <li>Klik <strong>Save</strong></li>
-            <li>Wacht 5 minuten</li>
-        </ol>
+    <div class="test">
+        <h3>Test 1: Firebase auth handler</h3>
+        <p>Deze moet werken:</p>
+        <p><code>https://playhackshield.github.io/__/auth/handler</code></p>
+        <button onclick="testURI('https://playhackshield.github.io/__/auth/handler')">
+            Test deze URI
+        </button>
     </div>
     
-    <div class="step">
-        <h2>Alternatieve oplossing: Nieuwe OAuth client maken</h2>
-        <p>Als bovenstaande niet werkt:</p>
-        <ol>
-            <li>Ga naar <a href="https://console.cloud.google.com/apis/credentials?project=schoolquizapp-28abf" target="_blank">Credentials</a></li>
-            <li>Klik <strong>"Create Credentials"</strong> → <strong>"OAuth client ID"</strong></li>
-            <li>Kies <strong>"Web application"</strong></li>
-            <li>Geef een naam: <strong>"Firebase Web Client"</strong></li>
-            <li>Bij <strong>Authorized JavaScript origins</strong>:
-                <ul>
-                    <li><code>https://playhackshield.github.io</code></li>
-                    <li><code>https://schoolquizapp-28abf.firebaseapp.com</code></li>
-                    <li><code>http://localhost</code></li>
-                </ul>
-            </li>
-            <li>Bij <strong>Authorized redirect URIs</strong>:
-                <ul>
-                    <li><code>https://schoolquizapp-28abf.firebaseapp.com/__/auth/handler</code></li>
-                    <li><code>https://playhackshield.github.io/__/auth/handler</code></li>
-                </ul>
-            </li>
-            <li>Klik <strong>Create</strong></li>
-            <li>Kopieer de nieuwe <strong>Client ID</strong></li>
-            <li>Ga naar <a href="https://console.firebase.google.com/project/schoolquizapp-28abf/authentication/providers" target="_blank">Firebase Google Sign-in</a></li>
-            <li>Plak de nieuwe Client ID</li>
-            <li>Klik <strong>Save</strong></li>
-        </ol>
-    </div>
-    
-    <div class="step">
-        <h2>Quick Test:</h2>
-        <button onclick="testDirectOAuth()">Test Direct OAuth</button>
-        <div id="testResult"></div>
+    <div class="test">
+        <h3>Test 2: Zonder auth handler (zal falen)</h3>
+        <p><code>https://playhackshield.github.io</code></p>
+        <button onclick="testURI('https://playhackshield.github.io')">
+            Test deze URI
+        </button>
     </div>
     
     <script>
-        function testDirectOAuth() {
-            const resultDiv = document.getElementById('testResult');
-            resultDiv.innerHTML = '<p>Testing...</p>';
+        function testURI(uri) {
+            alert(`Test URI:\n${uri}\n\nDeze moet toegevoegd zijn aan:\nGoogle Cloud Console → Credentials → OAuth 2.0 Client → Authorized redirect URIs`);
             
-            // Direct OAuth URL voor jouw project          
-            const clientId = '921022621334-1dpd96blvtsdqv9o4h8m05372cps100e.apps.googleusercontent.com'; // Vervang dit
-            const redirectUri = 'https://playhackshield.github.io';
-            
-            const oauthUrl = `https://accounts.google.com/o/oauth2/v2/auth?
-                client_id=${clientId}&
-                redirect_uri=${redirectUri}&
-                response_type=token&
-                scope=email%20profile&
-                state=test`.replace(/\s+/g, '');
-            
-            resultDiv.innerHTML = `
-                <p>OAuth URL voor test:</p>
-                <p><small><a href="${oauthUrl}" target="_blank">${oauthUrl}</a></small></p>
-                <p>Als dit werkt, is je client ID goed. Zo niet, maak een nieuwe aan.</p>
-            `;
+            // Direct link naar configuratie
+            window.open('https://console.cloud.google.com/apis/credentials?project=schoolquizapp-28abf', '_blank');
         }
     </script>
     
-    <div class="step">
-        <h2>Directe links voor jou:</h2>
-        <ul>
-            <li><a href="https://console.cloud.google.com/apis/credentials?project=schoolquizapp-28abf" target="_blank">
-                Google Cloud Credentials
-            </a></li>
-            <li><a href="https://console.firebase.google.com/project/schoolquizapp-28abf/authentication/providers" target="_blank">
-                Firebase Google Sign-in Config
-            </a></li>
-            <li><a href="https://playhackshield.github.io" target="_blank">
-                Je live website
-            </a></li>
-        </ul>
+    <div style="margin-top: 20px; padding: 15px; background: #fff3cd;">
+        <h3>Controleer in Google Cloud Console:</h3>
+        <ol>
+            <li>Open <a href="https://console.cloud.google.com/apis/credentials?project=schoolquizapp-28abf" target="_blank">Credentials</a></li>
+            <li>Klik op je Web client</li>
+            <li>Scroll naar <strong>"Authorized redirect URIs"</strong></li>
+            <li>Zorg dat dit erin staat: <code>https://playhackshield.github.io/__/auth/handler</code></li>
+            <li>Klik Save</li>
+        </ol>
     </div>
 </body>
 </html>
