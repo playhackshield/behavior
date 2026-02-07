@@ -1,48 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="nl">
 <head>
-    <title>Debug Auth 2</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <style>
-        body { font-family: Arial; padding: 20px; }
-        pre { background: #f5f5f5; padding: 15px; border-radius: 5px; }
-        .error { color: red; }
-        .success { color: green; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Firebase Google Login Test 3</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 30px; max-width: 600px; margin: auto; }
+    button { padding: 10px 20px; font-size: 16px; margin: 10px 0; cursor: pointer; }
+    #user-info { margin-top: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+    .hidden { display: none; }
+  </style>
 </head>
 <body>
-    <h1>Auth Debug</h1>
-    
-    <div>
-        <h3>1. Huidige domein:</h3>
-        <pre id="domain"></pre>
-    </div>
-    
-    <div>
-        <h3>2. Firebase Config:</h3>
-        <pre id="config"></pre>
-    </div>
-    
-    <div>
-        <h3>3. Test Google Login:</h3>
-        <button onclick="testLogin()">Test Login</button>
-        <div id="result"></div>
-    </div>
-    
-    <div>
-        <h3>4. Controlelijst:</h3>
-        <ul id="checklist">
-            <li>✅ Pagina geladen</li>
-        </ul>
-    </div>
-    
-    <script>
-        // Toon huidig domein
-        const domain = window.location.hostname;
-        document.getElementById('domain').textContent = domain;
-        
-        // Jouw Firebase config - VERVANG DIT!
+
+  <h1>Login Test met Google</h1>
+
+  <button id="loginBtn">Inloggen met Google</button>
+  <button id="logoutBtn" class="hidden">Uitloggen</button>
+
+  <div id="user-info" class="hidden">
+    <h3>Je bent ingelogd!</h3>
+    <p><strong>Naam:</strong> <span id="displayName"></span></p>
+    <p><strong>Email:</strong> <span id="email"></span></p>
+    <p><strong>UID:</strong> <span id="uid"></span></p>
+  </div>
+
+  <p id="status">Laden...</p>
+
+  <!-- === Firebase SDK's === -->
+  <script type="module">
+    // Importeer de benodigde Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { 
+      getAuth, 
+      GoogleAuthProvider, 
+      signInWithPopup, 
+      signOut,
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+    // 🔥 Vervang dit door jouw eigen Firebase configuratie!
+
+    // Initialiseer Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+      
 const firebaseConfig = {
   apiKey: "AIzaSyCO2ndD-lTBZpRrs-ZxIsBTVjPVza2sFXU",
   authDomain: "schoolquizapp-28abf.firebaseapp.com",
@@ -51,97 +53,60 @@ const firebaseConfig = {
   messagingSenderId: "921022621334",
   appId: "1:921022621334:web:ef582f1e067a77a41284b7"
 };
-        
-        // Toon config
-        document.getElementById('config').textContent = JSON.stringify(firebaseConfig, null, 2);
-        
-        // Test login
-        function testLogin() {
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = "<p>Initialiseren...</p>";
-            
-            try {
-                // Initialize Firebase
-                firebase.initializeApp(firebaseConfig);
-                const auth = firebase.auth();
-                
-                resultDiv.innerHTML += "<p>Firebase geïnitialiseerd</p>";
-                
-                // Test Google login
-                const provider = new firebase.auth.GoogleAuthProvider();
-                
-                auth.signInWithPopup(provider)
-                    .then((result) => {
-                        resultDiv.innerHTML = `
-                            <p class="success">✅ Login succesvol!</p>
-                            <p>Email: ${result.user.email}</p>
-                            <p>UID: ${result.user.uid}</p>
-                            <p><strong>authDomain in config moet overeenkomen met geautoriseerd domein</strong></p>
-                        `;
-                        
-                        // Update checklist
-                        document.getElementById('checklist').innerHTML += `
-                            <li class="success">✅ Firebase geïnitialiseerd</li>
-                            <li class="success">✅ Google login werkt</li>
-                        `;
-                    })
-                    .catch((error) => {
-                        console.error("Login error:", error);
-                        resultDiv.innerHTML = `
-                            <p class="error">❌ Login fout: ${error.code}</p>
-                            <p class="error">${error.message}</p>
-                            
-                            <h4>Oplossingen:</h4>
-                            <ul>
-                                <li><strong>Domein mismatch:</strong> Controleer authDomain in config</li>
-                                <li><strong>Niet geautoriseerd:</strong> Voeg '${domain}' toe aan Firebase Console</li>
-                                <li><strong>Google login niet aan:</strong> Zet Google Sign-in aan in Firebase Console</li>
-                                <li><strong>Wacht op propagatie:</strong> Wijzigingen kunnen 5-60 min duren</li>
-                            </ul>
-                            
-                            <p><button onclick="window.open('https://console.firebase.google.com/project/${firebaseConfig.projectId}/authentication/settings', '_blank')">
-                                Open Firebase Console
-                            </button></p>
-                        `;
-                    });
-                    
-            } catch (error) {
-                resultDiv.innerHTML = `<p class="error">Initialisatie fout: ${error.message}</p>`;
-            }
-        }
-        
-        // Controleer of authDomain overeenkomt met mogelijke project
-        const authDomain = firebaseConfig.authDomain;
-        const projectFromDomain = authDomain.replace('.firebaseapp.com', '');
-        
-        document.getElementById('checklist').innerHTML += `
-            <li>Project ID in config: ${firebaseConfig.projectId}</li>
-            <li>Auth Domain: ${authDomain}</li>
-            <li>Project uit authDomain: ${projectFromDomain}</li>
-            <li>Match: ${firebaseConfig.projectId === projectFromDomain ? '✅' : '❌ (probleem!)'}</li>
-        `;
-    </script>
-    
-    <div style="margin-top: 30px; padding: 15px; background: #e3f2fd; border-radius: 5px;">
-        <h3>Quick Fixes:</h3>
-        <ol>
-            <li><strong>Probeer incognito modus</strong> (Ctrl+Shift+N)</li>
-            <li><strong>Clear cache:</strong> Ctrl+Shift+Delete → "Cached images and files"</li>
-            <li><strong>Wacht 10 minuten</strong> en probeer opnieuw</li>
-            <li><strong>Controleer of je het juiste project</strong> hebt geselecteerd in Firebase Console</li>
-        </ol>
-        
-        <p><strong>Directe link naar je project:</strong><br>
-        <a href="#" id="firebaseLink">Loading...</a></p>
-    </div>
-    
-    <script>
-        // Genereer directe link naar Firebase Console
-        if (firebaseConfig.projectId && !firebaseConfig.projectId.includes('quiz-app')) {
-            const link = `https://console.firebase.google.com/project/${firebaseConfig.projectId}/authentication/settings`;
-            document.getElementById('firebaseLink').href = link;
-            document.getElementById('firebaseLink').textContent = link;
-        }
-    </script>
+      const provider = new GoogleAuthProvider();
+
+    // Elementen
+    const loginBtn   = document.getElementById("loginBtn");
+    const logoutBtn  = document.getElementById("logoutBtn");
+    const userInfo   = document.getElementById("user-info");
+    const status     = document.getElementById("status");
+    const displayNameEl = document.getElementById("displayName");
+    const emailEl    = document.getElementById("email");
+    const uidEl      = document.getElementById("uid");
+
+    // Luister naar auth status (ook na refresh!)
+    onAuthStateChanged(auth, (user) => {
+      status.textContent = ""; // wis status
+
+      if (user) {
+        // Ingelogd
+        loginBtn.classList.add("hidden");
+        logoutBtn.classList.remove("hidden");
+        userInfo.classList.remove("hidden");
+
+        displayNameEl.textContent = user.displayName || "Geen naam";
+        emailEl.textContent       = user.email || "Geen email";
+        uidEl.textContent         = user.uid;
+
+        console.log("Ingelogde gebruiker:", user);
+      } else {
+        // Niet ingelogd
+        loginBtn.classList.remove("hidden");
+        logoutBtn.classList.add("hidden");
+        userInfo.classList.add("hidden");
+
+        status.textContent = "Je bent niet ingelogd.";
+      }
+    });
+
+    // Inloggen
+    loginBtn.addEventListener("click", () => {
+      signInWithPopup(auth, provider)
+        .catch((error) => {
+          console.error("Login mislukt:", error);
+          status.textContent = "Login mislukt: " + error.message;
+        });
+    });
+
+    // Uitloggen
+    logoutBtn.addEventListener("click", () => {
+      signOut(auth)
+        .catch((error) => {
+          console.error("Uitloggen mislukt:", error);
+        });
+    });
+
+  </script>
+
 </body>
 </html>
