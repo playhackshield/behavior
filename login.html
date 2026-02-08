@@ -16,6 +16,7 @@
         <input type="email" id="email" placeholder="Email">
         <input type="password" id="password" placeholder="Wachtwoord">
         <button onclick="login()">Inloggen</button>
+        <button onclick="logout()">Uitloggen</button>
         <div id="error" class="error"></div>
     </div>
     
@@ -48,6 +49,20 @@ const firebaseConfig = {
                 .catch(error => {
                     document.getElementById('error').textContent = error.message;
                 });
+        }
+
+        // Uitloggen
+        function logout() {
+            if (confirm("Weet je zeker dat je wilt uitloggen?")) {
+                auth.signOut()
+                    .then(() => {
+                        console.log("Uitgelogd");
+                        showLogin();
+                    })
+                    .catch((error) => {
+                        console.error("Uitloggen fout:", error);
+                    });
+            }
         }
         
         // Enter toets
