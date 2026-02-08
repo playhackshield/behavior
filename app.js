@@ -1,41 +1,4 @@
 let currentClassId = null;
-const auth = firebase.auth();
-
-// Controleer wie er is ingelogd
-function checkCurrentUser() {
-    const user = auth.currentUser;
-    
-    if (user) {
-        console.log("Ingelogd als:", user.email);
-        console.log("User ID:", user.uid);
-        console.log("Naam:", user.displayName);
-        
-        // Toon in UI
-        document.getElementById('userEmail').textContent = user.email;
-        
-        // Check of het jij bent
-        if (user.email === "playhackshield@gmail.com") {
-            console.log("✓ Je bent de beheerder!");
-            enableAdminFeatures();
-        } else {
-            console.log("✓ Je bent een gewone gebruiker");
-            disableAdminFeatures();
-        }
-    } else {
-        console.log("Niet ingelogd");
-    }
-}
-
-// Deze functie wordt aangeroepen bij login/logout
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        console.log("Auth state changed: ingelogd als", user.email);
-        checkCurrentUser();
-    } else {
-        console.log("Auth state changed: uitgelogd");
-        // Toon login scherm
-    }
-});
 
 // Laad alle klassen
 function loadClasses() {
