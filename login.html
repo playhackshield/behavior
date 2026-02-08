@@ -74,6 +74,23 @@
         document.getElementById('password').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') login();
         });
+
+        function updateUserBanner() {
+            const user = auth.currentUser;
+            const banner = document.getElementById('userBanner');
+            
+            if (user) {
+                banner.style.display = 'flex';
+                document.getElementById('currentUserEmail').textContent = user.email;
+            } else {
+                document.getElementById('currentUserEmail').textContent = '(Niet ingelogd)';
+            }
+        }
+        
+        // Roep aan bij auth state change
+        auth.onAuthStateChanged((user) => {
+            updateUserBanner();
+        });        
     </script>
 </body>
 </html>
