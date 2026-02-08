@@ -280,30 +280,6 @@ function backToClasses() {
     loadClasses();
 }
 
-function updateUserBanner() {
-    const user = auth.currentUser;
-    const banner = document.getElementById('userBanner');
-    
-    if (user) {
-        banner.style.display = 'flex';
-        document.getElementById('currentUserEmail').textContent = user.email;
-        
-        // Als het jij bent, toon admin badge
-        if (user.email === "playhackshield@gmail.com") {
-            document.getElementById('adminBadge').style.display = 'inline';
-        } else {
-            document.getElementById('adminBadge').style.display = 'none';
-        }
-    } else {
-        banner.style.display = 'none';
-    }
-}
-
-// Roep aan bij auth state change
-auth.onAuthStateChanged((user) => {
-    updateUserBanner();
-});
-
 // Initialisatie
 document.addEventListener('DOMContentLoaded', () => {
     loadClasses();
