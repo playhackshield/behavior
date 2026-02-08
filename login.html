@@ -30,6 +30,7 @@
         <div id="userBanner" class="user-banner">
             <div>
                 Ingelogd als: <strong id="currentUserEmail"></strong>
+                <button onclick="logout()">Uitloggen</button>
             </div>
         </div>        
     </div>
@@ -62,7 +63,7 @@
                 auth.signOut()
                     .then(() => {
                         console.log("Uitgelogd");
-                        showLogin();
+                        window.location.href = 'index.html';
                     })
                     .catch((error) => {
                         console.error("Uitloggen fout:", error);
