@@ -17,21 +17,12 @@
     justify-content: space-between;
     align-items: center;
 }
-
-.admin-badge {
-    background: #4CAF50;
-    color: white;
-    padding: 3px 8px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: bold;
-}
     </style>
 </head>
 <body>
     <div id="userBanner" class="user-banner">
         <div>
-            Inglogd als: <strong id="currentUserEmail"></strong>
+            Ingelogd als: <strong id="currentUserEmail"></strong>
             <span id="adminBadge" class="admin-badge" style="display: none;">ADMIN</span>
         </div>
     </div>
@@ -42,6 +33,12 @@
         <input type="password" id="password" placeholder="Wachtwoord">
         <button onclick="login()">Inloggen</button>
         <div id="error" class="error"></div>
+
+        <div id="userBanner" class="user-banner">
+            <div>
+                Ingelogd als: <strong id="currentUserEmail"></strong>
+            </div>
+        </div>        
     </div>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
