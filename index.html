@@ -15,6 +15,14 @@
             <button onclick="showAddClassForm()" class="btn-primary">Nieuwe Klas</button>
         </header>
 
+        <div id="userBanner" class="user-banner" style="display: none;">
+            <div>
+                Inglogd als: <strong id="currentUserEmail"></strong>
+                <span id="adminBadge" class="admin-badge" style="display: none;">ADMIN</span>
+            </div>
+            <button onclick="logout()" class="btn-secondary">Uitloggen</button>
+        </div>
+        
         <div id="addClassForm" class="form-container" style="display: none;">
             <h3>Nieuwe Klas Toevoegen</h3>
             <input type="text" id="className" placeholder="Klasnaam (bijv. Groep 8A)" required>
