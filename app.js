@@ -15,6 +15,7 @@ function loadClasses() {
                         <p>${data.studentCount || 0} leerlingen</p>
                         <p>Aangemaakt: ${new Date(data.createdAt?.toDate()).toLocaleDateString()}</p>
                         <button class="delete-btn" onclick="deleteClass('${doc.id}', event)">Verwijder klas</button>
+                        <button class="duplicate-btn" onclick="duplicateClass('${doc.id}', event)">Dupliceer klas</button>                        
                     </div>
                 `;
                 container.innerHTML += classElement;
@@ -270,6 +271,76 @@ function deleteStudent(studentId) {
                 alert("Fout bij verwijderen leerling: " + error.message);
             });
     }
+}
+
+// Dupliceer een klas (met alle leerlingen)
+function duplicateClass(classId, event) {
+    event.stopPropagation();
+    
+    if (!confirm("Maak een kopie van deze klas? Leerlingen worden gekopieerd met scores op 0.")) {
+        return;
+    }
+    
+    // 1. Haal de originele klas op
+    db.collection("classes").doc(classId).get()
+        .then((classDoc) => {
+            if (!classDoc.exists) {
+                throw new Error("Klas niet gevonden");
+            }
+            
+            const originalClass = classDoc.data();
+            const newClassName = originalClass.name + " (kopie)";
+            
+            // 2. Maak een nieuwe klas aan
+            const newClassData = {
+                name: newClassName,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                studentCount: 0
+            };
+            
+            return db.collection("classes").add(newClassData).then((newClassRef) => {
+                // 3. Haal alle leerlingen van de originele klas op
+                return db.collection("students")
+                    .where("classId", "==", classId)
+                    .get()
+                    .then((studentsSnapshot) => {
+                        const batch = db.batch();
+                        
+                        studentsSnapshot.forEach((studentDoc) => {
+                            const originalStudent = studentDoc.data();
+                            // Kopieer leerling, maar zet score en tellers op 0
+                            const newStudentData = {
+                                firstName: originalStudent.firstName,
+                                lastName: originalStudent.lastName,
+                                classId: newClassRef.id,
+                                currentScore: 0,
+                                totalPoints: 0,
+                                greenCards: 0,
+                                purpleCards: 0,
+                                yellowCards: 0,
+                                redCards: 0,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            };
+                            const newStudentRef = db.collection("students").doc();
+                            batch.set(newStudentRef, newStudentData);
+                        });
+                        
+                        // Update ook het studentCount van de nieuwe klas
+                        batch.update(newClassRef, { studentCount: studentsSnapshot.size });
+                        
+                        return batch.commit();
+                    });
+            });
+        })
+        .then(() => {
+            console.log("Klas gedupliceerd");
+            alert("Klas is gekopieerd!");
+            loadClasses(); // Herlaad het klassenoverzicht
+        })
+        .catch((error) => {
+            console.error("Fout bij dupliceren: ", error);
+            alert("Fout bij dupliceren: " + error.message);
+        });
 }
 
 // Terug naar klassen overzicht
