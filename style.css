@@ -294,3 +294,27 @@ h1 {
     display: inline-block;
     margin-right: 5px;
 }
+
+.edit-name-btn {
+    background: #FF9800;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-right: 5px;
+    font-size: 12px;
+}
+
+.edit-name-btn:hover {
+    background: #e68900;
+}
+
+/* Optioneel: zorg dat de knoppen naast elkaar blijven */
+.class-card .edit-name-btn,
+.class-card .delete-btn,
+.class-card .duplicate-btn {
+    display: inline-block;
+    margin-right: 5px;
+}
