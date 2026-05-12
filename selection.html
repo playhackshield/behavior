@@ -44,6 +44,29 @@
             </div>
         </div>
 
+        <!-- Bewerk klas formulier -->
+        <div id="editClassForm" class="form-container" style="display: none;">
+            <h3>Klasnaam Wijzigen</h3>
+            <input type="text" id="editClassName" placeholder="Nieuwe klasnaam" required>
+            <input type="hidden" id="editClassId">
+            <div class="form-buttons">
+                <button onclick="updateClassName()" class="btn-primary">Opslaan</button>
+                <button onclick="hideEditClassForm()" class="btn-secondary">Annuleren</button>
+            </div>
+        </div>
+        
+        <!-- Bewerk leerling formulier -->
+        <div id="editStudentForm" class="form-container" style="display: none;">
+            <h3>Leerling Wijzigen</h3>
+            <input type="text" id="editStudentFirstName" placeholder="Voornaam" required>
+            <input type="text" id="editStudentLastName" placeholder="Achternaam" required>
+            <input type="hidden" id="editStudentId">
+            <div class="form-buttons">
+                <button onclick="updateStudentName()" class="btn-primary">Opslaan</button>
+                <button onclick="hideEditStudentForm()" class="btn-secondary">Annuleren</button>
+            </div>
+        </div>
+            
         <main>
             <div id="classesList" class="cards-container">
                 <!-- Klassen worden hier geladen -->
