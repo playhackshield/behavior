@@ -318,3 +318,25 @@ h1 {
     display: inline-block;
     margin-right: 5px;
 }
+
+.edit-btn {
+    background: #FF9800;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.edit-btn:hover {
+    background: #e68900;
+}
+
+.class-buttons, .student-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
