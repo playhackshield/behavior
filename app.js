@@ -14,9 +14,6 @@ function loadClasses() {
                         <h3>${data.name}</h3>
                         <p>${data.studentCount || 0} leerlingen</p>
                         <p>Aangemaakt: ${new Date(data.createdAt?.toDate()).toLocaleDateString()}</p>
-                    </div>
-
-                    <div class="class-buttons">
                         <button class="delete-btn" onclick="deleteClass('${doc.id}', event)">Verwijder klas</button>
                         <button class="duplicate-btn" onclick="duplicateClass('${doc.id}', event)">Dupliceer klas</button>
                         <button class="edit-btn" onclick="showEditClassForm('${doc.id}', '${data.name.replace(/'/g, "\\'")}', event)">Wijzig naam</button>
