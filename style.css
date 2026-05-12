@@ -271,3 +271,26 @@ h1 {
     font-size: 12px;
     font-weight: bold;
 }
+
+.duplicate-btn {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-left: 5px;
+    font-size: 12px;
+}
+
+.duplicate-btn:hover {
+    background: #0b7dda;
+}
+
+/* Zorg dat de knoppen naast elkaar staan */
+.class-card .delete-btn,
+.class-card .duplicate-btn {
+    display: inline-block;
+    margin-right: 5px;
+}
