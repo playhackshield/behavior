@@ -14,9 +14,12 @@ function loadClasses() {
                         <h3>${data.name}</h3>
                         <p>${data.studentCount || 0} leerlingen</p>
                         <p>Aangemaakt: ${new Date(data.createdAt?.toDate()).toLocaleDateString()}</p>
+                    </div>
+
+                    <div class="class-buttons">
                         <button class="delete-btn" onclick="deleteClass('${doc.id}', event)">Verwijder klas</button>
                         <button class="duplicate-btn" onclick="duplicateClass('${doc.id}', event)">Dupliceer klas</button>
-                        <button class="edit-name-btn" onclick="editClassName('${doc.id}', '${data.name}', event)">Wijzig naam</button>
+                        <button class="edit-btn" onclick="showEditClassForm('${doc.id}', '${data.name.replace(/'/g, "\\'")}', event)">Wijzig naam</button>
                     </div>
                 `;
                 container.innerHTML += classElement;
@@ -86,7 +89,10 @@ function createStudentCard(studentId, student) {
                 ${cardsHTML}
             </div>
             
-            <button class="delete-btn" onclick="deleteStudent('${studentId}')">Verwijder leerling</button>
+            <div class="student-buttons">
+                <button class="delete-btn" onclick="deleteStudent('${studentId}')">Verwijder leerling</button>
+                <button class="edit-btn" onclick="showEditStudentForm('${studentId}', '${student.firstName}', '${student.lastName}')">Wijzig naam</button>
+            </div>        
         </div>
     `;
 }
@@ -365,6 +371,88 @@ function editClassName(classId, currentName, event) {
     .catch((error) => {
         console.error("Fout bij wijzigen naam: ", error);
         alert("Fout bij wijzigen naam: " + error.message);
+    });
+}
+
+// === BEWERK KLASNAAM ===
+function showEditClassForm(classId, currentName, event) {
+    event.stopPropagation();
+    document.getElementById('editClassForm').style.display = 'block';
+    document.getElementById('editClassName').value = currentName;
+    document.getElementById('editClassId').value = classId;
+}
+
+function hideEditClassForm() {
+    document.getElementById('editClassForm').style.display = 'none';
+    document.getElementById('editClassName').value = '';
+    document.getElementById('editClassId').value = '';
+}
+
+function updateClassName() {
+    const classId = document.getElementById('editClassId').value;
+    const newName = document.getElementById('editClassName').value.trim();
+    
+    if (!newName) {
+        alert("Voer een klasnaam in");
+        return;
+    }
+    
+    db.collection("classes").doc(classId).update({
+        name: newName
+    })
+    .then(() => {
+        console.log("Klasnaam bijgewerkt");
+        hideEditClassForm();
+        loadClasses(); // herlaad het overzicht
+    })
+    .catch(error => {
+        console.error("Fout bij updaten klasnaam: ", error);
+        alert("Fout: " + error.message);
+    });
+}
+
+// === BEWERK LEERLINGNAAM ===
+function showEditStudentForm(studentId, firstName, lastName) {
+    document.getElementById('editStudentForm').style.display = 'block';
+    document.getElementById('editStudentFirstName').value = firstName;
+    document.getElementById('editStudentLastName').value = lastName;
+    document.getElementById('editStudentId').value = studentId;
+}
+
+function hideEditStudentForm() {
+    document.getElementById('editStudentForm').style.display = 'none';
+    document.getElementById('editStudentFirstName').value = '';
+    document.getElementById('editStudentLastName').value = '';
+    document.getElementById('editStudentId').value = '';
+}
+
+function updateStudentName() {
+    const studentId = document.getElementById('editStudentId').value;
+    const newFirstName = document.getElementById('editStudentFirstName').value.trim();
+    const newLastName = document.getElementById('editStudentLastName').value.trim();
+    
+    if (!newFirstName || !newLastName) {
+        alert("Voer voor- en achternaam in");
+        return;
+    }
+    
+    db.collection("students").doc(studentId).update({
+        firstName: newFirstName,
+        lastName: newLastName
+    })
+    .then(() => {
+        console.log("Leerlingnaam bijgewerkt");
+        hideEditStudentForm();
+        // Herlaad de huidige klas (als we in een klas zitten)
+        if (currentClassId) {
+            loadStudents(currentClassId, document.getElementById('classNameTitle').textContent);
+        } else {
+            // Anders herlaad alleen de lijst? Niet nodig.
+        }
+    })
+    .catch(error => {
+        console.error("Fout bij updaten leerlingnaam: ", error);
+        alert("Fout: " + error.message);
     });
 }
 
