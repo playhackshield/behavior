@@ -15,7 +15,8 @@ function loadClasses() {
                         <p>${data.studentCount || 0} leerlingen</p>
                         <p>Aangemaakt: ${new Date(data.createdAt?.toDate()).toLocaleDateString()}</p>
                         <button class="delete-btn" onclick="deleteClass('${doc.id}', event)">Verwijder klas</button>
-                        <button class="duplicate-btn" onclick="duplicateClass('${doc.id}', event)">Dupliceer klas</button>                        
+                        <button class="duplicate-btn" onclick="duplicateClass('${doc.id}', event)">Dupliceer klas</button>
+                        <button class="edit-name-btn" onclick="editClassName('${doc.id}', '${data.name}', event)">Wijzig naam</button>
                     </div>
                 `;
                 container.innerHTML += classElement;
@@ -341,6 +342,30 @@ function duplicateClass(classId, event) {
             console.error("Fout bij dupliceren: ", error);
             alert("Fout bij dupliceren: " + error.message);
         });
+}
+
+// Wijzig de naam van een klas
+function editClassName(classId, currentName, event) {
+    event.stopPropagation();
+    
+    const newName = prompt("Voer de nieuwe klassenaam in:", currentName);
+    
+    if (!newName || newName.trim() === "") {
+        return; // Geen naam ingevoerd of geannuleerd
+    }
+    
+    db.collection("classes").doc(classId).update({
+        name: newName.trim(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(() => {
+        console.log("Klasnaam bijgewerkt");
+        loadClasses(); // Herlaad het overzicht
+    })
+    .catch((error) => {
+        console.error("Fout bij wijzigen naam: ", error);
+        alert("Fout bij wijzigen naam: " + error.message);
+    });
 }
 
 // Terug naar klassen overzicht
