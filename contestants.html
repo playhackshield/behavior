@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deelnemers - Gedragsbeoordeling</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Deelnemers – <span id="classNameTitle">Klas</span></h1>
+            <button onclick="backToSelection()" class="btn-secondary">← Terug</button>
+        </header>
+
+        <div class="user-banner" id="userBanner" style="display: none;">
+            <div>
+                Ingelogd als: <strong id="currentUserEmail"></strong>
+            </div>
+            <button onclick="logout()" class="btn-secondary">Uitloggen</button>
+        </div>
+
+        <!-- Deelnemers sectie -->
+        <section class="form-container">
+            <h2>Deelnemers</h2>
+            <div id="contestantsList"></div>
+            <button onclick="addContestantRow()" class="btn-primary" style="margin-top: 15px;">
+                + Nieuw item toevoegen
+            </button>
+        </section>
+
+        <!-- Spellen sectie -->
+        <section class="form-container" style="margin-top: 30px;">
+            <h2>Spellen</h2>
+            <div id="gamesList"></div>
+            <button onclick="addGameRow()" class="btn-primary" style="margin-top: 15px;">
+                + Nieuw spel toevoegen
+            </button>
+        </section>
+
+        <!-- Export -->
+        <div style="text-align: center; margin-top: 30px;">
+            <button onclick="exportData()" class="btn-primary" style="padding: 15px 40px; font-size: 16px;">
+                📤 Exporteren
+            </button>
+        </div>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script src="contestants.js"></script>
+</body>
+</html>
