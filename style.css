@@ -340,3 +340,66 @@ h1 {
     margin-top: 10px;
     flex-wrap: wrap;
 }
+
+/* ===== Deelnemers & Spellen rijen ===== */
+.contestant-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 8px;
+    background: #fafafa;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    border: 1px solid #eee;
+}
+
+.contestant-row .contestant-name,
+.contestant-row .game-name {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.contestant-row .contestant-group {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 70px;
+    background: white;
+}
+
+.contestant-row .game-url {
+    flex: 2;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #555;
+}
+
+.contestant-row .delete-btn {
+    margin: 0;
+    padding: 8px 12px;
+    background: #ff4444;
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* Deelnemers-knop in klas-kaart */
+.contestants-btn {
+    background: #673AB7;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.contestants-btn:hover {
+    background: #512DA8;
+}
