@@ -58,23 +58,49 @@ function loadClassName() {
 }
 
 // Laad leerlingen van de klas als deelnemers
-function loadStudentsIntoContestants() {
-    db.collection("students")
-        .where("classId", "==", classId)
-        .orderBy("lastName")
-        .get()
-        .then((snapshot) => {
-            contestants = [];
-            snapshot.forEach((doc) => {
-                const s = doc.data();
-                contestants.push({
-                    naam: `${s.firstName} ${s.lastName}`,
-                    groep: 0
-                });
-            });
-            renderContestants();
-        })
-        .catch((error) => console.error("Fout bij laden leerlingen:", error));
+async function loadStudentsIntoContestants() {
+    try {
+        // 1. Haal de leerlingen van de klas op
+        const snapshot = await db.collection("students")
+            .where("classId", "==", classId)
+            .orderBy("lastName")
+            .get();
+
+        const leerlingenVanKlas = [];
+        snapshot.forEach((doc) => {
+            const s = doc.data();
+            leerlingenVanKlas.push(`${s.firstName} ${s.lastName}`);
+        });
+
+        // 2. Probeer de defaults voor deze klas op te halen
+        const defaultsDoc = await db.collection("contestants_defaults").doc(classId).get();
+
+        let defaults = null;
+        if (defaultsDoc.exists) {
+            const d = defaultsDoc.data();
+            if (Array.isArray(d.leerlingen)) {
+                defaults = d.leerlingen;
+            }
+        }
+
+        // 3. Bouw de contestants-lijst op
+        contestants = leerlingenVanKlas.map(naam => {
+            let groep = 0;
+            if (defaults) {
+                const match = defaults.find(d => d.naam === naam);
+                if (match && match.groep !== undefined) {
+                    groep = match.groep;
+                }
+            }
+            return { naam: naam, groep: groep };
+        });
+
+        renderContestants();
+        console.log(`✅ ${contestants.length} leerlingen geladen (defaults: ${defaults ? 'ja' : 'nee'})`);
+
+    } catch (error) {
+        console.error("Fout bij laden leerlingen:", error);
+    }
 }
 
 // Render deelnemerslijst
@@ -300,17 +326,28 @@ function exportData() {
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
             }
+        })        
+        .then(() => {
+            // 5. Schrijf ook de defaults voor deze klas
+            return db.collection("contestants_defaults").doc(classId).set({
+                classId: classId,
+                className: className,
+                leerlingen: contestants.map(c => ({
+                    naam: c.naam,
+                    groep: c.groep
+                })),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
         })
         .then(() => {
             alert("Export voltooid! Deelnemers en spellen zijn opgeslagen.");
-            // Herlaad spellen zodat nieuwe spellen nu een ID hebben
-            loadGames();
+            loadGames(); // herlaad spellen zodat nieuwe spellen nu een ID hebben
         })
         .catch((error) => {
             console.error("Fout bij exporteren:", error);
             alert("Fout bij exporteren: " + error.message);
         });
-}
+    }
 
 // Hulpfunctie om HTML te escapen
 function escapeHtml(text) {
