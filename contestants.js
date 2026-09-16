@@ -97,13 +97,13 @@ function renderContestants() {
                 <option value="0" ${c.groep == 0 ? 'selected' : ''}>0</option>
                 <option value="1" ${c.groep == 1 ? 'selected' : ''}>1</option>
                 <option value="2" ${c.groep == 2 ? 'selected' : ''}>2</option>
-                <option value="2" ${c.groep == 3 ? 'selected' : ''}>3</option>
-                <option value="2" ${c.groep == 4 ? 'selected' : ''}>4</option>
-                <option value="2" ${c.groep == 5 ? 'selected' : ''}>5</option>
-                <option value="2" ${c.groep == 6 ? 'selected' : ''}>6</option>
-                <option value="2" ${c.groep == 7 ? 'selected' : ''}>7</option>
-                <option value="2" ${c.groep == 8 ? 'selected' : ''}>8</option>
-                <option value="2" ${c.groep == 9 ? 'selected' : ''}>9</option>
+                <option value="3" ${c.groep == 3 ? 'selected' : ''}>3</option>
+                <option value="4" ${c.groep == 4 ? 'selected' : ''}>4</option>
+                <option value="5" ${c.groep == 5 ? 'selected' : ''}>5</option>
+                <option value="6" ${c.groep == 6 ? 'selected' : ''}>6</option>
+                <option value="7" ${c.groep == 7 ? 'selected' : ''}>7</option>
+                <option value="8" ${c.groep == 8 ? 'selected' : ''}>8</option>
+                <option value="9" ${c.groep == 9 ? 'selected' : ''}>9</option>
             </select>
             <button class="delete-btn" onclick="removeContestant(${index})" title="Verwijder">✖</button>
         `;
