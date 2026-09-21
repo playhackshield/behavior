@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesprotocol & Gedragsregels</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --yellow-card: #eab308;
+            --yellow-glow: rgba(234, 179, 8, 0.15);
+            --red-card: #dc2626;
+            --red-glow: rgba(220, 38, 38, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 2.5rem 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1050px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background-color: #1e293b;
+            border: 1px solid var(--border-color);
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* 3 Basisregels */
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .rule-item {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .rule-number {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+
+        .rule-item h3 {
+            font-size: 1.15rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .rule-item p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Sectietitel */
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        /* De Kaarten */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .consequence-card {
+            border-radius: 12px;
+            padding: 2.2rem;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .consequence-card.yellow {
+            border-top: 6px solid var(--yellow-card);
+            background: linear-gradient(180deg, var(--yellow-glow) 0%, var(--bg-card) 30%);
+        }
+
+        .consequence-card.red {
+            border-top: 6px solid var(--red-card);
+            background: linear-gradient(180deg, var(--red-glow) 0%, var(--bg-card) 30%);
+        }
+
+        .card-tag {
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .yellow .card-tag { color: var(--yellow-card); }
+        .red .card-tag { color: var(--red-card); }
+
+        .consequence-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .consequence-card ul {
+            list-style: none;
+            margin: 1.25rem 0;
+        }
+
+        .consequence-card ul li {
+            position: relative;
+            padding-left: 1.75rem;
+            margin-bottom: 0.85rem;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        .consequence-card ul li::before {
+            content: "•";
+            position: absolute;
+            left: 0.5rem;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .yellow ul li::before { color: var(--yellow-card); }
+        .red ul li::before { color: var(--red-card); }
+
+        .card-footer {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Afsluitend Kader */
+        .footer-note {
+            background-color: #0b1120;
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .footer-note strong {
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <div class="badge">Afspraken & Orde</div>
+        <h1>Regels & Protocol in de Les</h1>
+        <p class="subtitle">
+            Iedere leerling heeft recht op een veilige, rustige les en een docent die kan lesgeven. 
+            Onderbrekingen en herrie worden niet getolereerd.
+        </p>
+    </header>
+
+    <!-- 3 Basisregels -->
+    <div class="rules-grid">
+        <div class="rule-item">
+            <div class="rule-number">01</div>
+            <h3>Spreken & Aandacht</h3>
+            <p>Als de docent of een medeleerling praat, luistert de rest. Vragen of opmerkingen stel je door je hand op te steken.</p>
+        </div>
+        <div class="rule-item">
+            <div class="rule-number">02</div>
+            <h3>Plek & Focus</h3>
+            <p>Je blijft op je plek zitten. Geen rondlopen zonder toestemming en geen afleidende spullen op je tafel.</p>
+        </div>
+        <div class="rule-item">
+            <div class="rule-number">03</div>
+            <h3>Startklaar</h3>
+            <p>Bij aanvang van de les liggen spullen klaar en start je direct in rust. De les begint zodra je het lokaal betreedt.</p>
+        </div>
+    </div>
+
+    <!-- Escalatieladder -->
+    <div class="section-header">
+        <h2>Handhaving & Consequenties</h2>
+        <p class="subtitle">Gedrag heeft gevolgen. Er wordt gewerkt volgens een vast en strikt protocol.</p>
+    </div>
+
+    <div class="cards-container">
+        
+        <!-- Gele Kaart -->
+        <div class="consequence-card yellow">
+            <div>
+                <div class="card-tag">Stap 1 • Formele Waarschuwing</div>
+                <h3>Gele Kaart</h3>
+                <p>Na eerdere mondelinge waarschuwingen ga je over de grens. Je gedrag verstoort het leerproces.</p>
+                <ul>
+                    <li><strong>Officieel gesprek:</strong> Je gaat direct op gesprek bij de coördinator.</li>
+                    <li><strong>Aanwezigheid docent:</strong> Ik ben bij dit gesprek aanwezig om de situatie te rapporteren.</li>
+                    <li><strong>Dossieropbouw:</strong> Dit incident wordt officieel geregistreerd in het schoolsysteem. Je valt op.</li>
+                    <li><strong>Verantwoording:</strong> Je krijgt de kans je verhaal te doen, maar het gesprek is serieus en bindend.</li>
+                </ul>
+            </div>
+            <div class="card-footer">
+                Status: Officiële waarschuwing geregistreerd.
+            </div>
+        </div>
+
+        <!-- Rode Kaart -->
+        <div class="consequence-card red">
+            <div>
+                <div class="card-tag">Stap 2 • Directe Uitsluiting</div>
+                <h3>Rode Kaart</h3>
+                <p>Het verstorende gedrag houdt niet op, of er is sprake van een zware overtreding.</p>
+                <ul>
+                    <li><strong>Directe verwijdering:</strong> Je verlaat per direct de les en keert onder geen beding terug.</li>
+                    <li><strong>Ouders ingelicht:</strong> Je ouders/verzorgers worden direct op de hoogte gesteld en opgeroepen.</li>
+                    <li><strong>Schoolleiding/Directie:</strong> De zaak wordt overgedragen aan de leiding.</li>
+                    <li><strong>Verdere sancties:</strong> Er volgen zwaardere maatregelen buiten mijn bevoegdheid om (schorsing/intern verblijf).</li>
+                </ul>
+            </div>
+            <div class="card-footer">
+                Status: Definitieve verwijdering & sanctietraject.
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer-note">
+        <strong>Belangrijk:</strong> De docent bepaalt wanneer een waarschuwing of kaart wordt toegekend. Er wordt tijdens de les niet over gediscussieerd.
+    </div>
+
+</div>
+
+</body>
+</html>
