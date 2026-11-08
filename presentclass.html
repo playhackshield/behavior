@@ -3,32 +3,272 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presentatie</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Klassenshow!</title>
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    
+    <!-- Canvas Confetti Library voor feestelijke effecten -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- Google Font voor een speelse kindvriendelijke uitstraling -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #a8ff78 0%, #78ffd6 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border: 4px solid #fff;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        h1#pageTitle {
+            font-family: 'Fredoka One', cursive;
+            color: #ff4757;
+            font-size: 2.2rem;
+            text-shadow: 2px 2px 0px #ffa502;
+        }
+
+        /* --- Knoppen --- */
+        .btn {
+            font-family: 'Fredoka One', cursive;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 0px rgba(0,0,0,0.2);
+        }
+
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-secondary { background-color: #70a1ff; color: white; }
+        .btn-primary { background-color: #ff6b81; color: white; }
+        .btn-success { background-color: #2ed573; color: white; font-size: 1.3rem; padding: 15px 35px; }
+
+        /* --- Leerlingenkaart --- */
+        .card-wrapper {
+            perspective: 1000px;
+            margin: 20px 0;
+            min-height: 280px;
+        }
+
+        .presentation-card {
+            background: #ffffff;
+            border: 6px solid #eccc68;
+            border-radius: 24px;
+            padding: 35px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            position: relative;
+        }
+
+        .presentation-name {
+            font-family: 'Fredoka One', cursive;
+            font-size: 3rem;
+            color: #2f3542;
+            margin-bottom: 15px;
+            word-break: break-word;
+        }
+
+        .presentation-notes {
+            font-size: 1.3rem;
+            color: #57606f;
+            background: #f1f2f6;
+            padding: 20px;
+            border-radius: 16px;
+            border-left: 6px solid #1e90ff;
+            text-align: left;
+            min-height: 80px;
+        }
+
+        .presentation-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .presentation-counter {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.4rem;
+            color: #747d8c;
+        }
+
+        /* --- Podium / Onthulling --- */
+        .podium-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 15px;
+            height: 320px;
+            margin-top: 30px;
+        }
+
+        .podium-step {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .podium-step.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .podium-box {
+            width: 100%;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: 'Fredoka One', cursive;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+        }
+
+        .rank-3 .podium-box { height: 120px; background: #e056fd; }
+        .rank-2 .podium-box { height: 160px; background: #7ed6df; }
+        .rank-1 .podium-box { height: 210px; background: #ffbe76; }
+
+        .podium-avatar {
+            font-size: 3rem;
+            margin-bottom: 5px;
+        }
+
+        .podium-name {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.4rem;
+            color: #2f3542;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .podium-score {
+            background: rgba(255,255,255,0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+        }
+
+        /* --- Animatie classes voor de willekeurige effecten --- */
+        .anim-pop { animation: animPop 0.6s ease forwards; }
+        .anim-spin { animation: animSpin 0.7s ease forwards; }
+        .anim-slide-left { animation: animSlideLeft 0.5s ease forwards; }
+        .anim-slide-right { animation: animSlideRight 0.5s ease forwards; }
+        .anim-flip { animation: animFlip 0.7s ease forwards; }
+        .anim-bounce { animation: animBounce 0.6s ease forwards; }
+
+        @keyframes animPop {
+            0% { transform: scale(0.3); opacity: 0; }
+            70% { transform: scale(1.08); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes animSpin {
+            0% { transform: rotate(-180deg) scale(0.2); opacity: 0; }
+            100% { transform: rotate(0deg) scale(1); opacity: 1; }
+        }
+
+        @keyframes animSlideLeft {
+            0% { transform: translateX(100px); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes animSlideRight {
+            0% { transform: translateX(-100px); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes animFlip {
+            0% { transform: rotateY(90deg); opacity: 0; }
+            100% { transform: rotateY(0deg); opacity: 1; }
+        }
+
+        @keyframes animBounce {
+            0% { transform: translateY(-100px); opacity: 0; }
+            60% { transform: translateY(15px); }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .status-message.error { background: #ff7675; color: white; }
+    </style>
 </head>
 <body>
+
     <div class="container">
         <header>
             <h1 id="pageTitle">Presentatie</h1>
-            <button onclick="window.location.href='overview.html'" class="btn-secondary">← Terug naar overzicht</button>
+            <button onclick="window.location.href='overview.html'" class="btn btn-secondary">← Terug</button>
         </header>
 
         <div id="statusMessage" class="status-message" style="display: none;"></div>
 
         <div id="presentationArea">
-            <p>Laden...</p>
+            <p style="text-align: center; font-size: 1.2rem;">Laden van de klas...</p>
         </div>
     </div>
 
     <script src="firebase-config.js"></script>
     <script>
-        let students = [];        // gesorteerde lijst op alfabetische volgorde
-        let topThree = [];       // top 3 op basis van hoogste gemiddelde
+        let students = [];        
+        let topThree = [];       
         let currentIndex = 0;
         let classNameGlobal = '';
+
+        const animations = ['anim-pop', 'anim-spin', 'anim-slide-left', 'anim-slide-right', 'anim-flip', 'anim-bounce'];
 
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
@@ -40,8 +280,7 @@
             }
 
             classNameGlobal = className;
-            document.getElementById('pageTitle').textContent = 'Presentatie: ' + className;
-
+            document.getElementById('pageTitle').textContent = 'Klas: ' + className;
             loadClassData(className);
         });
 
@@ -62,22 +301,20 @@
                     const data = snapshot.docs[0].data();
                     const rawStudents = data.students || [];
 
-                    // Leerlingen met average === null overslaan (optie C)
                     const validStudents = rawStudents.filter(s => typeof s.average === 'number');
 
                     if (validStudents.length === 0) {
-                        showMessage('Geen leerlingen met een geldig gemiddelde om te tonen.', 'error');
+                        showMessage('Geen leerlingen om te tonen.', 'error');
                         document.getElementById('presentationArea').innerHTML = '';
                         return;
                     }
 
-                    // Alfabetisch sorteren op voornaam
+                    // Alfabetisch sorteren
                     students = validStudents.slice().sort((a, b) =>
                         (a.firstName || '').localeCompare(b.firstName || '')
                     );
 
-                    // Top 3 op basis van hoogste gemiddelde
-                    // Bij gelijk gemiddelde: alfabetische volgorde als tiebreaker
+                    // Top 3 bepalen
                     topThree = validStudents.slice().sort((a, b) => {
                         if (b.average !== a.average) return b.average - a.average;
                         return (a.firstName || '').localeCompare(b.firstName || '');
@@ -92,31 +329,38 @@
                 });
         }
 
+        function getRandomAnimation() {
+            return animations[Math.floor(Math.random() * animations.length)];
+        }
+
         function renderStudent() {
             const area = document.getElementById('presentationArea');
             const student = students[currentIndex];
             const isLast = currentIndex === students.length - 1;
+            const animClass = getRandomAnimation();
 
             area.innerHTML = `
-                <div class="presentation-card">
-                    <h2 class="presentation-name">${escapeHtml(student.firstName)}</h2>
-                    <p class="presentation-average">Gemiddelde: ${student.average.toFixed(2)}</p>
-                    <div class="presentation-notes">
-                        ${student.notes && student.notes.trim()
-                            ? escapeHtml(student.notes).replace(/\n/g, '<br>')
-                            : '<em>(geen opmerkingen)</em>'}
+                <div class="card-wrapper">
+                    <div class="presentation-card ${animClass}">
+                        <h2 class="presentation-name">⭐ ${escapeHtml(student.firstName)} ⭐</h2>
+                        <div class="presentation-notes">
+                            💬 <strong>Opmerking:</strong><br>
+                            ${student.notes && student.notes.trim()
+                                ? escapeHtml(student.notes).replace(/\n/g, '<br>')
+                                : '<em>(geen opmerkingen)</em>'}
+                        </div>
                     </div>
                 </div>
 
                 <div class="presentation-nav">
-                    <button class="btn-secondary" onclick="prevStudent()" ${currentIndex === 0 ? 'disabled' : ''}>← Vorige</button>
-                    <span class="presentation-counter">${currentIndex + 1} / ${students.length}</span>
-                    <button class="btn-primary" onclick="nextStudent()" ${isLast ? 'disabled' : ''}>Volgende →</button>
+                    <button class="btn btn-secondary" onclick="prevStudent()" ${currentIndex === 0 ? 'disabled' : ''}>← Vorige</button>
+                    <span class="presentation-counter">${currentIndex + 1} van ${students.length}</span>
+                    <button class="btn btn-primary" onclick="nextStudent()" ${isLast ? 'disabled' : ''}>Volgende →</button>
                 </div>
 
                 ${isLast ? `
                 <div style="text-align:center; margin-top: 30px;">
-                    <button class="btn-success" onclick="showReveal()">🎉 Toon onthulling</button>
+                    <button class="btn btn-success" onclick="startRevealSequence()">🏆 Naar de Onthulling!</button>
                 </div>
                 ` : ''}
             `;
@@ -136,36 +380,89 @@
             }
         }
 
-        function showReveal() {
+        /* --- Trapsgewijze Onthulling Animaties --- */
+        function startRevealSequence() {
             const area = document.getElementById('presentationArea');
 
-            const medals = ['🥇', '🥈', '🥉'];
-
-            let topHtml = '';
-            topThree.forEach((s, i) => {
-                topHtml += `
-                    <div class="reveal-row">
-                        <span class="reveal-medal">${medals[i] || ''}</span>
-                        <span class="reveal-name">${escapeHtml(s.firstName)}</span>
-                        <span class="reveal-average">${s.average.toFixed(2)}</span>
-                    </div>
-                `;
-            });
+            // Top 3 ordenen voor het podium: [Nummer 2, Nummer 1, Nummer 3]
+            const first = topThree[0];
+            const second = topThree[1];
+            const third = topThree[2];
 
             area.innerHTML = `
-                <div class="reveal-card">
-                    <h2 class="reveal-title">🎉 Onthulling van de top 3</h2>
-                    <p class="reveal-subtitle">${escapeHtml(classNameGlobal)}</p>
-                    <div class="reveal-list">
-                        ${topHtml}
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="font-family: 'Fredoka One'; font-size: 2.2rem; color: #ff4757;">🏆 De Grote Onthulling! 🏆</h2>
+                    <p style="color: #57606f; font-weight: bold;">Wie heeft de hoogste scores behaald?</p>
+                </div>
+
+                <div class="podium-container">
+                    <!-- Nummer 2 (Zilver) -->
+                    <div class="podium-step rank-2" id="step-2">
+                        ${second ? `
+                            <div class="podium-avatar">🥈</div>
+                            <div class="podium-name">${escapeHtml(second.firstName)}</div>
+                            <div class="podium-box">
+                                <div style="font-size: 1.8rem;">2</div>
+                                <div class="podium-score">Score: ${second.average.toFixed(1)}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Nummer 1 (Goud) -->
+                    <div class="podium-step rank-1" id="step-1">
+                        ${first ? `
+                            <div class="podium-avatar">👑</div>
+                            <div class="podium-name" style="font-size: 1.8rem; color: #d35400;">${escapeHtml(first.firstName)}</div>
+                            <div class="podium-box">
+                                <div style="font-size: 2.5rem;">🥇 1</div>
+                                <div class="podium-score">Score: ${first.average.toFixed(1)}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Nummer 3 (Brons) -->
+                    <div class="podium-step rank-3" id="step-3">
+                        ${third ? `
+                            <div class="podium-avatar">🥉</div>
+                            <div class="podium-name">${escapeHtml(third.firstName)}</div>
+                            <div class="podium-box">
+                                <div style="font-size: 1.5rem;">3</div>
+                                <div class="podium-score">Score: ${third.average.toFixed(1)}</div>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
 
-                <div class="presentation-nav">
-                    <button class="btn-secondary" onclick="backToPresentation()">← Terug naar leerlingen</button>
-                    <button class="btn-primary" onclick="window.location.href='overview.html'">Naar overzicht</button>
+                <div class="presentation-nav" style="margin-top: 40px;">
+                    <button class="btn btn-secondary" onclick="backToPresentation()">← Terug</button>
+                    <button class="btn btn-primary" onclick="window.location.href='overview.html'">Overzicht</button>
                 </div>
             `;
+
+            // Stap 1: Toon #3 na 0.5s
+            setTimeout(() => {
+                const el3 = document.getElementById('step-3');
+                if(el3) el3.classList.add('visible');
+            }, 600);
+
+            // Stap 2: Toon #2 na 2s
+            setTimeout(() => {
+                const el2 = document.getElementById('step-2');
+                if(el2) el2.classList.add('visible');
+            }, 2100);
+
+            // Stap 3: Grootse onthulling #1 met confetti na 3.8s!
+            setTimeout(() => {
+                const el1 = document.getElementById('step-1');
+                if(el1) el1.classList.add('visible');
+                
+                // Confetti regen!
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            }, 3800);
         }
 
         function backToPresentation() {
