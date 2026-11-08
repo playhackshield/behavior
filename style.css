@@ -403,3 +403,74 @@ h1 {
 .contestants-btn:hover {
     background: #512DA8;
 }
+
+/* === Nieuwe stijlen voor gemiddelden-pagina en knoppen === */
+
+.header-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-success {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.btn-success:hover { background: #45a049; }
+
+.averages-btn {
+    background: #4285f4;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-top: 5px;
+}
+.averages-btn:hover { background: #3367d6; }
+
+.averages-toolbar {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.class-info {
+    background: #e3f2fd;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.averages-textarea {
+    width: 100%;
+    min-height: 500px;
+    padding: 15px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.status-message {
+    padding: 12px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+.status-message.success { background: #d4edda; color: #155724; }
+.status-message.error   { background: #f8d7da; color: #721c24; }
+.status-message.info    { background: #d1ecf1; color: #0c5460; }
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
