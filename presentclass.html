@@ -25,8 +25,10 @@
 
     <script src="firebase-config.js"></script>
     <script>
-        let students = [];   // gesorteerde lijst met { firstName, average, notes }
+        let students = [];        // gesorteerde lijst op alfabetische volgorde
+        let topThree = [];       // top 3 op basis van hoogste gemiddelde
         let currentIndex = 0;
+        let classNameGlobal = '';
 
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
@@ -37,6 +39,7 @@
                 return;
             }
 
+            classNameGlobal = className;
             document.getElementById('pageTitle').textContent = 'Presentatie: ' + className;
 
             loadClassData(className);
@@ -60,16 +63,25 @@
                     const rawStudents = data.students || [];
 
                     // Leerlingen met average === null overslaan (optie C)
-                    students = rawStudents.filter(s => typeof s.average === 'number');
+                    const validStudents = rawStudents.filter(s => typeof s.average === 'number');
 
-                    // Sorteer: laagste gemiddelde eerst, hoogste laatste
-                    students.sort((a, b) => a.average - b.average);
-
-                    if (students.length === 0) {
+                    if (validStudents.length === 0) {
                         showMessage('Geen leerlingen met een geldig gemiddelde om te tonen.', 'error');
                         document.getElementById('presentationArea').innerHTML = '';
                         return;
                     }
+
+                    // Alfabetisch sorteren op voornaam
+                    students = validStudents.slice().sort((a, b) =>
+                        (a.firstName || '').localeCompare(b.firstName || '')
+                    );
+
+                    // Top 3 op basis van hoogste gemiddelde
+                    // Bij gelijk gemiddelde: alfabetische volgorde als tiebreaker
+                    topThree = validStudents.slice().sort((a, b) => {
+                        if (b.average !== a.average) return b.average - a.average;
+                        return (a.firstName || '').localeCompare(b.firstName || '');
+                    }).slice(0, 3);
 
                     currentIndex = 0;
                     renderStudent();
@@ -83,6 +95,7 @@
         function renderStudent() {
             const area = document.getElementById('presentationArea');
             const student = students[currentIndex];
+            const isLast = currentIndex === students.length - 1;
 
             area.innerHTML = `
                 <div class="presentation-card">
@@ -98,8 +111,14 @@
                 <div class="presentation-nav">
                     <button class="btn-secondary" onclick="prevStudent()" ${currentIndex === 0 ? 'disabled' : ''}>← Vorige</button>
                     <span class="presentation-counter">${currentIndex + 1} / ${students.length}</span>
-                    <button class="btn-primary" onclick="nextStudent()" ${currentIndex === students.length - 1 ? 'disabled' : ''}>Volgende →</button>
+                    <button class="btn-primary" onclick="nextStudent()" ${isLast ? 'disabled' : ''}>Volgende →</button>
                 </div>
+
+                ${isLast ? `
+                <div style="text-align:center; margin-top: 30px;">
+                    <button class="btn-success" onclick="showReveal()">🎉 Toon onthulling</button>
+                </div>
+                ` : ''}
             `;
         }
 
@@ -115,6 +134,43 @@
                 currentIndex++;
                 renderStudent();
             }
+        }
+
+        function showReveal() {
+            const area = document.getElementById('presentationArea');
+
+            const medals = ['🥇', '🥈', '🥉'];
+
+            let topHtml = '';
+            topThree.forEach((s, i) => {
+                topHtml += `
+                    <div class="reveal-row">
+                        <span class="reveal-medal">${medals[i] || ''}</span>
+                        <span class="reveal-name">${escapeHtml(s.firstName)}</span>
+                        <span class="reveal-average">${s.average.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+
+            area.innerHTML = `
+                <div class="reveal-card">
+                    <h2 class="reveal-title">🎉 Onthulling van de top 3</h2>
+                    <p class="reveal-subtitle">${escapeHtml(classNameGlobal)}</p>
+                    <div class="reveal-list">
+                        ${topHtml}
+                    </div>
+                </div>
+
+                <div class="presentation-nav">
+                    <button class="btn-secondary" onclick="backToPresentation()">← Terug naar leerlingen</button>
+                    <button class="btn-primary" onclick="window.location.href='overview.html'">Naar overzicht</button>
+                </div>
+            `;
+        }
+
+        function backToPresentation() {
+            currentIndex = students.length - 1;
+            renderStudent();
         }
 
         function escapeHtml(str) {
