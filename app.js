@@ -9,15 +9,17 @@ function loadClasses() {
             
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
+                const safeName = data.name.replace(/'/g, "\\'");
                 const classElement = `
-                    <div class="class-card" onclick="loadStudents('${doc.id}', '${data.name}')">
+                    <div class="class-card" onclick="loadStudents('${doc.id}', '${safeName}')">
                         <h3>${data.name}</h3>
                         <p>${data.studentCount || 0} leerlingen</p>
                         <p>Aangemaakt: ${new Date(data.createdAt?.toDate()).toLocaleDateString()}</p>
                             <button class="delete-btn" onclick="deleteClass('${doc.id}', event)">Verwijder klas</button>
                             <button class="duplicate-btn" onclick="duplicateClass('${doc.id}', event)">Dupliceer klas</button>
-                            <button class="edit-btn" onclick="showEditClassForm('${doc.id}', '${data.name.replace(/'/g, "\\'")}', event)">Wijzig naam</button>
+                            <button class="edit-btn" onclick="showEditClassForm('${doc.id}', '${safeName}', event)">Wijzig naam</button>
                             <button class="contestants-btn" onclick="event.stopPropagation(); window.location.href='contestants.html?classId=${doc.id}'">Deelnemers</button>
+                            <button class="averages-btn" onclick="event.stopPropagation(); window.location.href='averages.html?className=${encodeURIComponent(data.name)}'">Toon gemiddelden</button>
                     </div>
                 `;
                 container.innerHTML += classElement;
