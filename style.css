@@ -474,3 +474,74 @@ button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+/* === Overview pagina === */
+.overview-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+}
+
+.overview-name {
+    font-weight: bold;
+    font-size: 18px;
+    color: #333;
+    flex: 0 0 auto;
+}
+
+.overview-count {
+    color: #666;
+    flex: 1;
+}
+
+/* === Presentatie pagina === */
+.presentation-card {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+    margin: 20px 0;
+    min-height: 300px;
+}
+
+.presentation-name {
+    font-size: 48px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.presentation-average {
+    font-size: 24px;
+    color: #4285f4;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+.presentation-notes {
+    font-size: 20px;
+    color: #555;
+    line-height: 1.6;
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.presentation-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.presentation-counter {
+    font-size: 18px;
+    color: #666;
+    font-weight: bold;
+}
