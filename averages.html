@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemiddelden</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gemiddelden</h1>
+            <button onclick="window.location.href='selection.html'" class="btn-secondary">← Terug naar klassen</button>
+        </header>
+
+        <div id="statusMessage" class="status-message" style="display: none;"></div>
+
+        <div class="averages-toolbar">
+            <button onclick="calculateAverages()" class="btn-primary">Bereken gemiddelden</button>
+            <button onclick="saveAverages()" class="btn-success">Opslaan</button>
+        </div>
+
+        <div id="classInfo" class="class-info"></div>
+
+        <textarea id="averagesTextarea" class="averages-textarea" spellcheck="false" placeholder="Nog geen gegevens..."></textarea>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script src="averages.js"></script>
+</body>
+</html>
