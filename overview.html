@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Totaaloverzicht</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 </head>
 <body>
     <div class="container">
@@ -12,7 +15,75 @@
             <h1>Totaaloverzicht</h1>
             <button onclick="window.location.href='selection.html'" class="btn-secondary">← Terug</button>
         </header>
-        <p>Deze pagina wordt later gebouwd. Hier komt een overzicht van alle opgeslagen gemiddelden uit de collectie <code>classAverages</code>.</p>
+
+        <div id="statusMessage" class="status-message" style="display: none;"></div>
+
+        <div id="overviewList">
+            <!-- Klassen worden hier geladen -->
+        </div>
     </div>
+
+    <script src="firebase-config.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOverview();
+        });
+
+        function loadOverview() {
+            const container = document.getElementById('overviewList');
+            container.innerHTML = '<p>Laden...</p>';
+
+            db.collection('classAverages').get()
+                .then((snapshot) => {
+                    if (snapshot.empty) {
+                        container.innerHTML = '<p>Nog geen gemiddelden opgeslagen.</p>';
+                        return;
+                    }
+
+                    const items = [];
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        items.push({
+                            className: data.className || '(naamloos)',
+                            students: data.students || []
+                        });
+                    });
+
+                    // Alfabetisch sorteren op className
+                    items.sort((a, b) => a.className.localeCompare(b.className));
+
+                    container.innerHTML = '';
+                    items.forEach((item) => {
+                        const row = document.createElement('div');
+                        row.className = 'overview-row';
+
+                        const nameSpan = document.createElement('span');
+                        nameSpan.className = 'overview-name';
+                        nameSpan.textContent = item.className;
+
+                        const countSpan = document.createElement('span');
+                        countSpan.className = 'overview-count';
+                        countSpan.textContent = ` (${item.students.length} leerlingen)`;
+
+                        const btn = document.createElement('button');
+                        btn.className = 'btn-primary';
+                        btn.textContent = 'Toon';
+                        btn.onclick = () => {
+                            window.location.href = 'presentclass.html?className=' +
+                                encodeURIComponent(item.className);
+                        };
+
+                        row.appendChild(nameSpan);
+                        row.appendChild(countSpan);
+                        row.appendChild(btn);
+                        container.appendChild(row);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Fout bij laden overzicht:', error);
+                    container.innerHTML = '<p style="color:red">Fout bij laden: ' + error.message + '</p>';
+                });
+        }
+    </script>
 </body>
 </html>
