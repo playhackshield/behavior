@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentatie</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="pageTitle">Presentatie</h1>
+            <button onclick="window.location.href='overview.html'" class="btn-secondary">← Terug naar overzicht</button>
+        </header>
+
+        <div id="statusMessage" class="status-message" style="display: none;"></div>
+
+        <div id="presentationArea">
+            <p>Laden...</p>
+        </div>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script>
+        let students = [];   // gesorteerde lijst met { firstName, average, notes }
+        let currentIndex = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const className = params.get('className');
+
+            if (!className) {
+                showMessage('Geen klasnaam meegegeven.', 'error');
+                return;
+            }
+
+            document.getElementById('pageTitle').textContent = 'Presentatie: ' + className;
+
+            loadClassData(className);
+        });
+
+        function showMessage(text, type) {
+            const el = document.getElementById('statusMessage');
+            el.textContent = text;
+            el.className = 'status-message ' + type;
+            el.style.display = 'block';
+        }
+
+        function loadClassData(className) {
+            db.collection('classAverages').where('className', '==', className).get()
+                .then((snapshot) => {
+                    if (snapshot.empty) {
+                        showMessage('Geen gegevens gevonden voor "' + className + '".', 'error');
+                        return;
+                    }
+                    const data = snapshot.docs[0].data();
+                    const rawStudents = data.students || [];
+
+                    // Leerlingen met average === null overslaan (optie C)
+                    students = rawStudents.filter(s => typeof s.average === 'number');
+
+                    // Sorteer: laagste gemiddelde eerst, hoogste laatste
+                    students.sort((a, b) => a.average - b.average);
+
+                    if (students.length === 0) {
+                        showMessage('Geen leerlingen met een geldig gemiddelde om te tonen.', 'error');
+                        document.getElementById('presentationArea').innerHTML = '';
+                        return;
+                    }
+
+                    currentIndex = 0;
+                    renderStudent();
+                })
+                .catch((error) => {
+                    console.error('Fout bij laden presentatie:', error);
+                    showMessage('Fout bij laden: ' + error.message, 'error');
+                });
+        }
+
+        function renderStudent() {
+            const area = document.getElementById('presentationArea');
+            const student = students[currentIndex];
+
+            area.innerHTML = `
+                <div class="presentation-card">
+                    <h2 class="presentation-name">${escapeHtml(student.firstName)}</h2>
+                    <p class="presentation-average">Gemiddelde: ${student.average.toFixed(2)}</p>
+                    <div class="presentation-notes">
+                        ${student.notes && student.notes.trim()
+                            ? escapeHtml(student.notes).replace(/\n/g, '<br>')
+                            : '<em>(geen opmerkingen)</em>'}
+                    </div>
+                </div>
+
+                <div class="presentation-nav">
+                    <button class="btn-secondary" onclick="prevStudent()" ${currentIndex === 0 ? 'disabled' : ''}>← Vorige</button>
+                    <span class="presentation-counter">${currentIndex + 1} / ${students.length}</span>
+                    <button class="btn-primary" onclick="nextStudent()" ${currentIndex === students.length - 1 ? 'disabled' : ''}>Volgende →</button>
+                </div>
+            `;
+        }
+
+        function prevStudent() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderStudent();
+            }
+        }
+
+        function nextStudent() {
+            if (currentIndex < students.length - 1) {
+                currentIndex++;
+                renderStudent();
+            }
+        }
+
+        function escapeHtml(str) {
+            if (str === undefined || str === null) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+    </script>
+</body>
+</html>
