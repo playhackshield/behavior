@@ -13,12 +13,15 @@
     <div class="container">
         <header>
             <h1>Gedragsbeoordeling</h1>
-            <button onclick="showAddClassForm()" class="btn-primary">Nieuwe Klas</button>
+            <div class="header-buttons">
+                <button onclick="showAddClassForm()" class="btn-primary">Nieuwe Klas</button>
+                <button onclick="window.location.href='overview.html'" class="btn-secondary">Totaaloverzicht</button>
+            </div>
         </header>
 
         <div id="userBanner" class="user-banner" style="display: none;">
             <div>
-                Inglogd als: <strong id="currentUserEmail"></strong>
+                Ingelogd als: <strong id="currentUserEmail"></strong>
                 <span id="adminBadge" class="admin-badge" style="display: none;">ADMIN</span>
             </div>
             <button onclick="logout()" class="btn-secondary">Uitloggen</button>
@@ -26,7 +29,7 @@
         
         <div id="addClassForm" class="form-container" style="display: none;">
             <h3>Nieuwe Klas Toevoegen</h3>
-            <input type="text" id="className" placeholder="Klasnaam (bijv. Groep 8A)" required>
+            <input type="text" id="className" placeholder="Klasnaam (bijv. Olympia - Week 1)" required>
             <div class="form-buttons">
                 <button onclick="addClass()" class="btn-primary">Opslaan</button>
                 <button onclick="hideAddClassForm()" class="btn-secondary">Annuleren</button>
@@ -44,7 +47,6 @@
             </div>
         </div>
 
-        <!-- Bewerk klas formulier -->
         <div id="editClassForm" class="form-container" style="display: none;">
             <h3>Klasnaam Wijzigen</h3>
             <input type="text" id="editClassName" placeholder="Nieuwe klasnaam" required>
@@ -55,7 +57,6 @@
             </div>
         </div>
         
-        <!-- Bewerk leerling formulier -->
         <div id="editStudentForm" class="form-container" style="display: none;">
             <h3>Leerling Wijzigen</h3>
             <input type="text" id="editStudentFirstName" placeholder="Voornaam" required>
