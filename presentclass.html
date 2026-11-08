@@ -344,7 +344,6 @@
                     <div class="presentation-card ${animClass}">
                         <h2 class="presentation-name">⭐ ${escapeHtml(student.firstName)} ⭐</h2>
                         <div class="presentation-notes">
-                            💬 <strong>Opmerking:</strong><br>
                             ${student.notes && student.notes.trim()
                                 ? escapeHtml(student.notes).replace(/\n/g, '<br>')
                                 : '<em>(geen opmerkingen)</em>'}
