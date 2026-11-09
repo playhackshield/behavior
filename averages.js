@@ -129,24 +129,26 @@ function calculateAverages() {
             const allStudents = result.students;
             const numberOfClasses = result.classCount;
 
-            // Stap 3: groeperen op firstName
-            // We houden per leerling bij:
-            //   - scores: alleen niet-nul currentScore waarden (voor gemiddelde)
-            //   - classIds: alle classIds waarin de leerling voorkomt (voor aantal klassen)
-            const grouped = {};
-            allStudents.forEach((student) => {
-                const key = student.firstName;
-                if (!grouped[key]) {
-                    grouped[key] = { scores: [], classIds: new Set() };
-                }
-                grouped[key].classIds.add(student.classId);
-                const score = student.currentScore;
-                // Alleen niet-nul scores meenemen
-                if (typeof score === 'number' && score !== 0) {
-                    grouped[key].scores.push(score);
-                }
-            });
-
+// Stap 3: groeperen op firstName
+// We houden per leerling bij:
+//   - scores: alleen niet-nul currentScore waarden (voor gemiddelde)
+//   - classIds: alleen classIds waar de leerling een NIET-NUL score heeft
+//              (dus "aanwezig" = beoordeeld met een score anders dan 0)
+const grouped = {};
+allStudents.forEach((student) => {
+    const key = student.firstName;
+    if (!grouped[key]) {
+        grouped[key] = { scores: [], classIds: new Set() };
+    }
+    const score = student.currentScore;
+    if (typeof score === 'number' && score !== 0) {
+        // Niet-nul score: telt mee voor gemiddelde én voor aanwezigheid
+        grouped[key].scores.push(score);
+        grouped[key].classIds.add(student.classId);
+    }
+    // Bij score 0: niet meetellen als aanwezig, niet meetellen in gemiddelde
+});
+            
             // Stap 4: bestaande notes ophalen uit het tekstveld (zodat we die kunnen behouden)
             const existingNotes = {};
             try {
@@ -160,23 +162,22 @@ function calculateAverages() {
                 // Ongeldige JSON in tekstveld: negeren
             }
 
-            // Stap 5: gemiddelden berekenen
-            const students = Object.keys(grouped).map((firstName) => {
-                const entry = grouped[firstName];
-                const scores = entry.scores;
-                let average = null;
-                if (scores.length > 0) {
-                    const sum = scores.reduce((a, b) => a + b, 0);
-                    average = Math.round((sum / scores.length) * 100) / 100;
-                }
-                return {
-                    firstName: firstName,
-                    average: average,
-                    notes: existingNotes[firstName] || '',
-                    numberOfClasses: entry.classIds.size
-                };
-            });
-
+// Stap 5: gemiddelden berekenen
+const students = Object.keys(grouped).map((firstName) => {
+    const entry = grouped[firstName];
+    const scores = entry.scores;
+    let average = null;
+    if (scores.length > 0) {
+        const sum = scores.reduce((a, b) => a + b, 0);
+        average = Math.round((sum / scores.length) * 100) / 100;
+    }
+    return {
+        firstName: firstName,
+        average: average,
+        notes: existingNotes[firstName] || '',
+        numberOfClasses: entry.classIds.size   // ← alleen klassen met niet-nul score
+    };
+});
             // Sorteer op voornaam
             students.sort((a, b) => a.firstName.localeCompare(b.firstName));
 
