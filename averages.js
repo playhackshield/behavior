@@ -43,6 +43,7 @@ function disableButtons() {
 function setDefaultEmptyJson() {
     const emptyJson = {
         className: currentBaseName || '',
+        numberOfClasses: 0,
         students: []
     };
     document.getElementById('averagesTextarea').value = JSON.stringify(emptyJson, null, 2);
@@ -59,6 +60,7 @@ function loadExistingAverages(baseName) {
 
                 const displayData = {
                     className: data.className,
+                    numberOfClasses: typeof data.numberOfClasses === 'number' ? data.numberOfClasses : 0,
                     students: data.students || []
                 };
                 document.getElementById('averagesTextarea').value = JSON.stringify(displayData, null, 2);
@@ -115,21 +117,33 @@ function calculateAverages() {
                 snapshots.forEach((s) => {
                     s.forEach((doc) => allStudents.push(doc.data()));
                 });
-                return allStudents;
+                return {
+                    classCount: classIds.length,
+                    students: allStudents
+                };
             });
         })
-        .then((allStudents) => {
-            if (allStudents === null) return;
+        .then((result) => {
+            if (result === null) return;
+
+            const allStudents = result.students;
+            const numberOfClasses = result.classCount;
 
             // Stap 3: groeperen op firstName
+            // We houden per leerling bij:
+            //   - scores: alleen niet-nul currentScore waarden (voor gemiddelde)
+            //   - classIds: alle classIds waarin de leerling voorkomt (voor aantal klassen)
             const grouped = {};
             allStudents.forEach((student) => {
                 const key = student.firstName;
-                if (!grouped[key]) grouped[key] = [];
+                if (!grouped[key]) {
+                    grouped[key] = { scores: [], classIds: new Set() };
+                }
+                grouped[key].classIds.add(student.classId);
                 const score = student.currentScore;
                 // Alleen niet-nul scores meenemen
                 if (typeof score === 'number' && score !== 0) {
-                    grouped[key].push(score);
+                    grouped[key].scores.push(score);
                 }
             });
 
@@ -148,7 +162,8 @@ function calculateAverages() {
 
             // Stap 5: gemiddelden berekenen
             const students = Object.keys(grouped).map((firstName) => {
-                const scores = grouped[firstName];
+                const entry = grouped[firstName];
+                const scores = entry.scores;
                 let average = null;
                 if (scores.length > 0) {
                     const sum = scores.reduce((a, b) => a + b, 0);
@@ -157,7 +172,8 @@ function calculateAverages() {
                 return {
                     firstName: firstName,
                     average: average,
-                    notes: existingNotes[firstName] || ''
+                    notes: existingNotes[firstName] || '',
+                    numberOfClasses: entry.classIds.size
                 };
             });
 
@@ -165,11 +181,12 @@ function calculateAverages() {
             students.sort((a, b) => a.firstName.localeCompare(b.firstName));
 
             // Stap 6: tekstveld vullen
-            const result = {
+            const resultJson = {
                 className: currentBaseName,
+                numberOfClasses: numberOfClasses,
                 students: students
             };
-            document.getElementById('averagesTextarea').value = JSON.stringify(result, null, 2);
+            document.getElementById('averagesTextarea').value = JSON.stringify(resultJson, null, 2);
             showMessage('Gemiddelden berekend. Vergeet niet op te slaan!', 'success');
         })
         .catch((error) => {
@@ -199,9 +216,13 @@ function saveAverages() {
     // Forceer className op basis van de basisnaam (veiligheid)
     parsed.className = currentBaseName;
 
+    // numberOfClasses: neem over uit JSON, of val terug op 0
+    const numberOfClasses = typeof parsed.numberOfClasses === 'number' ? parsed.numberOfClasses : 0;
+
     // Voeg updatedAt toe
     const dataToSave = {
         className: currentBaseName,
+        numberOfClasses: numberOfClasses,
         students: parsed.students,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
