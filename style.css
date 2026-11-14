@@ -567,3 +567,47 @@ button:disabled {
 .reset-btn:hover {
     background: #3367d6;
 }
+
+
+/* === Extra info-pagina === */
+.student-info-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 12px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.photo-url-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.photo-url-row input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Extra info-knop in studentkaart */
+.extra-info-btn {
+    background: #673AB7;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.extra-info-btn:hover {
+    background: #512DA8;
+}
