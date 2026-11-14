@@ -518,32 +518,51 @@ button:disabled {
 }
 
 /* === Score-knopjes === */
-.score-pills {
+/* === Score-knopjes in 2 rijen === */
+.score-row {
     display: flex;
-    flex-wrap: wrap;
-    gap: 3px;
-    margin: 10px 0;
+    gap: 4px;
+    margin: 6px 0;
 }
 
 .score-pill {
-    width: 30px;
-    height: 30px;
+    /* Vaste breedte zodat alle knopjes even groot zijn als "+10" */
+    width: 44px;
+    height: 32px;
     border: 2px solid transparent;
     border-radius: 4px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: bold;
     color: white;
     cursor: pointer;
     padding: 0;
     text-shadow: 0 1px 1px rgba(0,0,0,0.3);
     transition: transform 0.1s, border-color 0.1s;
+    box-sizing: border-box;
+    flex-shrink: 0;
 }
 
 .score-pill:hover {
-    transform: scale(1.1);
+    transform: scale(1.08);
 }
 
 .score-pill.active {
     border-color: #333;
     box-shadow: 0 0 0 2px #333;
+}
+
+/* === Reset-knop === */
+.reset-btn {
+    background: #4285f4;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.reset-btn:hover {
+    background: #3367d6;
 }
