@@ -115,6 +115,7 @@ function createStudentCard(studentId, student) {
                 <button class="reset-btn" onclick="setScore('${studentId}', 0)">Reset</button>
                 <button class="delete-btn" onclick="deleteStudent('${studentId}')">Verwijder leerling</button>
                 <button class="edit-btn" onclick="showEditStudentForm('${studentId}', '${student.firstName.replace(/'/g, "\\'")}', '${student.lastName.replace(/'/g, "\\'")}')">Wijzig naam</button>
+                <button class="extra-info-btn" onclick="window.location.href='student.html?studentId=${studentId}&classId=${currentClassId}&className=${encodeURIComponent(currentClassName)}'">Extra info</button>
             </div>
         </div>
     `;
@@ -247,10 +248,19 @@ function addStudent() {
         });
 }
 
-// Leerling verwijderen
+// Leerling verwijderen (inclusief studentInfo)
 function deleteStudent(studentId) {
     if (confirm("Weet je zeker dat je deze leerling wilt verwijderen?")) {
-        db.collection("students").doc(studentId).delete()
+        // Eerst studentInfo opruimen (als dat bestaat)
+        db.collection("studentInfo").doc(studentId).delete()
+            .catch((error) => {
+                // Als het document niet bestaat, is dat geen probleem
+                console.log("studentInfo opruimen (of niet aanwezig):", error.message);
+            })
+            .then(() => {
+                // Dan de leerling zelf verwijderen
+                return db.collection("students").doc(studentId).delete();
+            })
             .then(() => {
                 console.log("Leerling verwijderd");
                 document.getElementById(`student-${studentId}`).remove();
