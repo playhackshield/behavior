@@ -139,29 +139,6 @@ h1 {
     color: #333;
 }
 
-.student-score {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-}
-
-.score-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    margin: 15px 0;
-}
-
-.score-bar {
-    flex: 1;
-    height: 30px;
-    background: linear-gradient(to right, #ff4444, #ffbb33, #00C851);
-    border-radius: 15px;
-    overflow: hidden;
-    position: relative;
-}
-
 .score-indicator {
     position: absolute;
     top: 0;
@@ -171,16 +148,10 @@ h1 {
     background: #333;
     transform: translateX(-50%);
 }
-
-.score-dot {
-    position: absolute;
-    top: 50%;
-    width: 20px;
-    height: 20px;
-    background: #333;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: left 0.3s;
+.student-score {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
 }
 
 .score-buttons {
@@ -544,4 +515,35 @@ button:disabled {
     font-size: 18px;
     color: #666;
     font-weight: bold;
+}
+
+/* === Score-knopjes === */
+.score-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin: 10px 0;
+}
+
+.score-pill {
+    width: 30px;
+    height: 30px;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    padding: 0;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+    transition: transform 0.1s, border-color 0.1s;
+}
+
+.score-pill:hover {
+    transform: scale(1.1);
+}
+
+.score-pill.active {
+    border-color: #333;
+    box-shadow: 0 0 0 2px #333;
 }
