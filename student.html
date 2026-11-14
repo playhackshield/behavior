@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extra info – Leerling</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="pageTitle">Extra info</h1>
+            <button id="backBtn" class="btn-secondary">← Terug naar leerlingen</button>
+        </header>
+
+        <div id="statusMessage" class="status-message" style="display: none;"></div>
+
+        <div class="form-container">
+            <h3>Notities</h3>
+            <textarea id="notesField" class="student-info-textarea" placeholder="Extra notities over deze leerling..."></textarea>
+
+            <h3 style="margin-top: 20px;">Foto-URL</h3>
+            <div class="photo-url-row">
+                <input type="text" id="photoUrlField" placeholder="https://... (bijv. Google Foto's deellink)">
+                <button id="openPhotoBtn" class="btn-primary" onclick="openPhoto()">Open</button>
+            </div>
+
+            <div class="form-buttons" style="margin-top: 25px;">
+                <button class="btn-success" onclick="saveStudentInfo()">Opslaan</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script src="student.js"></script>
+</body>
+</html>
