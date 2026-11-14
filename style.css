@@ -527,7 +527,7 @@ button:disabled {
 
 .score-pill {
     /* Vaste breedte zodat alle knopjes even groot zijn als "+10" */
-    width: 44px;
+    width: 31px;
     height: 32px;
     border: 2px solid transparent;
     border-radius: 4px;
