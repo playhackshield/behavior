@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klassen – Gedragsbeoordeling</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gedragsbeoordeling – Klassen</h1>
+            <div class="header-buttons">
+                <button onclick="showAddClassForm()" class="btn-primary">Nieuwe Klas</button>
+                <button onclick="window.location.href='overview.html'" class="btn-secondary">Totaaloverzicht</button>
+            </div>
+        </header>
+
+        <div id="addClassForm" class="form-container" style="display: none;">
+            <h3>Nieuwe Klas Toevoegen</h3>
+            <input type="text" id="className" placeholder="Klasnaam (bijv. Olympia - Week 1)" required>
+            <div class="form-buttons">
+                <button onclick="addClass()" class="btn-primary">Opslaan</button>
+                <button onclick="hideAddClassForm()" class="btn-secondary">Annuleren</button>
+            </div>
+        </div>
+
+        <div id="editClassForm" class="form-container" style="display: none;">
+            <h3>Klasnaam Wijzigen</h3>
+            <input type="text" id="editClassName" placeholder="Nieuwe klasnaam" required>
+            <input type="hidden" id="editClassId">
+            <div class="form-buttons">
+                <button onclick="updateClassName()" class="btn-primary">Opslaan</button>
+                <button onclick="hideEditClassForm()" class="btn-secondary">Annuleren</button>
+            </div>
+        </div>
+
+        <main>
+            <div id="classesList" class="cards-container">
+                <!-- Klassen worden hier geladen -->
+            </div>
+        </main>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script src="classes.js"></script>
+</body>
+</html>

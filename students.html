@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leerlingen – Gedragsbeoordeling</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Leerlingen</h1>
+            <button onclick="window.location.href='classes.html'" class="btn-secondary">← Terug naar klassen</button>
+        </header>
+
+        <div id="addStudentForm" class="form-container" style="display: none;">
+            <h3>Nieuwe Leerling Toevoegen</h3>
+            <input type="text" id="studentFirstName" placeholder="Voornaam" required>
+            <input type="text" id="studentLastName" placeholder="Achternaam" required>
+            <input type="hidden" id="currentClassId">
+            <div class="form-buttons">
+                <button onclick="addStudent()" class="btn-primary">Opslaan</button>
+                <button onclick="hideAddStudentForm()" class="btn-secondary">Annuleren</button>
+            </div>
+        </div>
+
+        <div id="editStudentForm" class="form-container" style="display: none;">
+            <h3>Leerling Wijzigen</h3>
+            <input type="text" id="editStudentFirstName" placeholder="Voornaam" required>
+            <input type="text" id="editStudentLastName" placeholder="Achternaam" required>
+            <input type="hidden" id="editStudentId">
+            <div class="form-buttons">
+                <button onclick="updateStudentName()" class="btn-primary">Opslaan</button>
+                <button onclick="hideEditStudentForm()" class="btn-secondary">Annuleren</button>
+            </div>
+        </div>
+
+        <main>
+            <div id="studentsContainer">
+                <h2 id="classNameTitle"></h2>
+                <button onclick="showAddStudentForm()" class="btn-primary">Nieuwe Leerling</button>
+                <div class="students-grid" id="studentsGrid">
+                    <!-- Leerlingen worden hier geladen -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script src="students.js"></script>
+</body>
+</html>
