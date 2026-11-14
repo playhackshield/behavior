@@ -62,14 +62,28 @@ function createStudentCard(studentId, student) {
     if (score >= 5) cardsHTML += '<span class="card-indicator card-green">GROENE KAART</span>';
     if (score >= 10) cardsHTML += '<span class="card-indicator card-purple">PAARSE KAART</span>';
 
-    // Bouw 21 knopjes van -10 t/m 10
-    let buttonsHTML = '';
-    for (let i = -10; i <= 10; i++) {
-        // Bepaal de kleur op basis van de waarde
+    // Rij 1: -10 t/m -1
+    let row1 = '';
+    for (let i = -10; i <= -1; i++) {
         const color = scoreButtonColor(i);
         const activeClass = (i === score) ? ' active' : '';
-        const label = (i > 0) ? '+' + i : i.toString();
-        buttonsHTML += `
+        row1 += `
+            <button
+                class="score-pill${activeClass}"
+                style="background: ${color};"
+                onclick="setScore('${studentId}', ${i})"
+                title="Zet score op ${i}"
+            >${i}</button>
+        `;
+    }
+
+    // Rij 2: +1 t/m +10
+    let row2 = '';
+    for (let i = 1; i <= 10; i++) {
+        const color = scoreButtonColor(i);
+        const activeClass = (i === score) ? ' active' : '';
+        const label = '+' + i;
+        row2 += `
             <button
                 class="score-pill${activeClass}"
                 style="background: ${color};"
@@ -86,8 +100,11 @@ function createStudentCard(studentId, student) {
                 <div class="student-score">${score > 0 ? '+' : ''}${score}</div>
             </div>
 
-            <div class="score-pills">
-                ${buttonsHTML}
+            <div class="score-row">
+                ${row1}
+            </div>
+            <div class="score-row">
+                ${row2}
             </div>
 
             <div class="card-indicators">
@@ -95,6 +112,7 @@ function createStudentCard(studentId, student) {
             </div>
 
             <div class="student-buttons">
+                <button class="reset-btn" onclick="setScore('${studentId}', 0)">Reset</button>
                 <button class="delete-btn" onclick="deleteStudent('${studentId}')">Verwijder leerling</button>
                 <button class="edit-btn" onclick="showEditStudentForm('${studentId}', '${student.firstName.replace(/'/g, "\\'")}', '${student.lastName.replace(/'/g, "\\'")}')">Wijzig naam</button>
             </div>
