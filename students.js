@@ -55,13 +55,29 @@ function loadStudents(classId, className) {
 // Maak studentkaart
 function createStudentCard(studentId, student) {
     const score = student.currentScore || 0;
-    const leftPosition = ((score + 10) / 20) * 100;
 
     let cardsHTML = '';
     if (score <= -10) cardsHTML += '<span class="card-indicator card-red">RODE KAART</span>';
     if (score <= -5) cardsHTML += '<span class="card-indicator card-yellow">GELE KAART</span>';
     if (score >= 5) cardsHTML += '<span class="card-indicator card-green">GROENE KAART</span>';
     if (score >= 10) cardsHTML += '<span class="card-indicator card-purple">PAARSE KAART</span>';
+
+    // Bouw 21 knopjes van -10 t/m 10
+    let buttonsHTML = '';
+    for (let i = -10; i <= 10; i++) {
+        // Bepaal de kleur op basis van de waarde
+        const color = scoreButtonColor(i);
+        const activeClass = (i === score) ? ' active' : '';
+        const label = (i > 0) ? '+' + i : i.toString();
+        buttonsHTML += `
+            <button
+                class="score-pill${activeClass}"
+                style="background: ${color};"
+                onclick="setScore('${studentId}', ${i})"
+                title="Zet score op ${i}"
+            >${label}</button>
+        `;
+    }
 
     return `
         <div class="student-card" id="student-${studentId}">
@@ -70,15 +86,8 @@ function createStudentCard(studentId, student) {
                 <div class="student-score">${score > 0 ? '+' : ''}${score}</div>
             </div>
 
-            <div class="score-container">
-                <button class="score-btn score-minus" onclick="updateScore('${studentId}', -1)">-</button>
-
-                <div class="score-bar">
-                    <div class="score-indicator"></div>
-                    <div class="score-dot" style="left: ${leftPosition}%;"></div>
-                </div>
-
-                <button class="score-btn score-plus" onclick="updateScore('${studentId}', 1)">+</button>
+            <div class="score-pills">
+                ${buttonsHTML}
             </div>
 
             <div class="card-indicators">
@@ -93,8 +102,32 @@ function createStudentCard(studentId, student) {
     `;
 }
 
-// Score aanpassen
-function updateScore(studentId, change) {
+// Hulpfunctie: kleur van rood (-10) naar groen (+10)
+function scoreButtonColor(value) {
+    // -10 = rood (#ff4444), 0 = geel (#ffbb33), +10 = groen (#00C851)
+    // We interpoleren tussen rood → geel → groen
+    if (value <= 0) {
+        // -10..0 : rood naar geel
+        const t = (value + 10) / 10; // 0 bij -10, 1 bij 0
+        const r = Math.round(255);
+        const g = Math.round(68 + (187 - 68) * t);  // 68 → 187
+        const b = Math.round(68 + (51 - 68) * t);   // 68 → 51
+        return `rgb(${r}, ${g}, ${b})`;
+    } else {
+        // 0..10 : geel naar groen
+        const t = value / 10; // 0 bij 0, 1 bij 10
+        const r = Math.round(255 - (255 - 0) * t);  // 255 → 0
+        const g = Math.round(187 + (200 - 187) * t); // 187 → 200
+        const b = Math.round(51 + (81 - 51) * t);   // 51 → 81
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+}
+
+// Zet de score direct op een bepaalde waarde
+function setScore(studentId, newScore) {
+    // Beperk tot -10..10 (zou al zo moeten zijn, maar voor de zekerheid)
+    newScore = Math.max(-10, Math.min(10, newScore));
+
     const studentRef = db.collection("students").doc(studentId);
 
     db.runTransaction((transaction) => {
@@ -104,18 +137,22 @@ function updateScore(studentId, change) {
             }
 
             const student = doc.data();
-            const currentScore = student.currentScore || 0;
-            const newScore = Math.max(-10, Math.min(10, currentScore + change));
+            const oldScore = student.currentScore || 0;
+
+            // Als de score niet verandert: niets doen
+            if (oldScore === newScore) {
+                return null;
+            }
 
             transaction.update(studentRef, {
                 currentScore: newScore,
-                totalPoints: (student.totalPoints || 0) + Math.abs(change)
+                totalPoints: (student.totalPoints || 0) + Math.abs(newScore - oldScore)
             });
 
             const eventData = {
                 studentId: studentId,
                 classId: student.classId,
-                change: change,
+                change: newScore - oldScore,
                 newScore: newScore,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
@@ -129,7 +166,7 @@ function updateScore(studentId, change) {
         });
     })
     .then(() => {
-        console.log("Score bijgewerkt");
+        // Herlaad de studentkaart
         studentRef.get().then((doc) => {
             if (doc.exists) {
                 const studentCard = document.getElementById(`student-${studentId}`);
@@ -140,7 +177,7 @@ function updateScore(studentId, change) {
         });
     })
     .catch((error) => {
-        console.error("Fout bij updaten score: ", error);
+        console.error("Fout bij zetten score: ", error);
         alert("Fout bij bijwerken score: " + error.message);
     });
 }
