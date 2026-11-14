@@ -211,6 +211,20 @@ function hideAddStudentForm() {
     document.getElementById('addStudentForm').style.display = 'none';
 }
 
+// Werk het studentCount-veld van een klas bij op basis van het werkelijke aantal leerlingen
+function updateClassStudentCount(classId) {
+    return db.collection("students").where("classId", "==", classId).get()
+        .then((snapshot) => {
+            const count = snapshot.size;
+            return db.collection("classes").doc(classId).update({
+                studentCount: count
+            }).then(() => count);
+        })
+        .catch((error) => {
+            console.error("Fout bij bijwerken studentCount:", error);
+        });
+}
+
 function addStudent() {
     const firstName = document.getElementById('studentFirstName').value.trim();
     const lastName = document.getElementById('studentLastName').value.trim();
@@ -240,6 +254,10 @@ function addStudent() {
             document.getElementById('studentFirstName').value = '';
             document.getElementById('studentLastName').value = '';
             hideAddStudentForm();
+            // Eerst studentCount bijwerken, daarna de lijst herladen
+            return updateClassStudentCount(classId);
+        })
+        .then(() => {
             loadStudents(currentClassId, currentClassName);
         })
         .catch((error) => {
@@ -248,28 +266,41 @@ function addStudent() {
         });
 }
 
-// Leerling verwijderen (inclusief studentInfo)
 function deleteStudent(studentId) {
-    if (confirm("Weet je zeker dat je deze leerling wilt verwijderen?")) {
-        // Eerst studentInfo opruimen (als dat bestaat)
-        db.collection("studentInfo").doc(studentId).delete()
-            .catch((error) => {
-                // Als het document niet bestaat, is dat geen probleem
-                console.log("studentInfo opruimen (of niet aanwezig):", error.message);
-            })
-            .then(() => {
-                // Dan de leerling zelf verwijderen
-                return db.collection("students").doc(studentId).delete();
-            })
-            .then(() => {
-                console.log("Leerling verwijderd");
-                document.getElementById(`student-${studentId}`).remove();
-            })
-            .catch((error) => {
-                console.error("Fout bij verwijderen leerling: ", error);
-                alert("Fout bij verwijderen leerling: " + error.message);
-            });
+    if (!confirm("Weet je zeker dat je deze leerling wilt verwijderen?")) {
+        return;
     }
+
+    // Eerst het classId van de leerling ophalen (nodig voor studentCount)
+    db.collection("students").doc(studentId).get()
+        .then((doc) => {
+            if (!doc.exists) {
+                throw new Error("Leerling niet gevonden");
+            }
+            const classId = doc.data().classId;
+            return classId;
+        })
+        .then((classId) => {
+            // studentInfo opruimen (als dat bestaat)
+            return db.collection("studentInfo").doc(studentId).delete()
+                .catch(() => { /* niet aanwezig: negeren */ })
+                .then(() => {
+                    // Dan de leerling zelf verwijderen
+                    return db.collection("students").doc(studentId).delete();
+                })
+                .then(() => {
+                    // En het studentCount van de klas bijwerken
+                    return updateClassStudentCount(classId);
+                });
+        })
+        .then(() => {
+            console.log("Leerling verwijderd");
+            document.getElementById(`student-${studentId}`).remove();
+        })
+        .catch((error) => {
+            console.error("Fout bij verwijderen leerling: ", error);
+            alert("Fout bij verwijderen leerling: " + error.message);
+        });
 }
 
 // Leerlingnaam bewerken
